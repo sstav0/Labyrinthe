@@ -1,7 +1,7 @@
 import socket
 import json
 import sys
-#import ai
+from ai import move
 
 
 def runner_inscription(port: int = 3000):  
@@ -70,13 +70,13 @@ def server():
                 with client: 
                     data = json.loads(client.recv(4096).decode())
                     if data["request"] == 'play':
-                        print('play')
-                        data = None
+                        move(data)
+                        data = {}
                     if data["request"] == 'ping':
                         print(data["request"])
                         client.sendall(pong().encode())
                         print("pong")
-                        data = None
+                        data = {}
             except socket.timeout:
                 pass 
 
