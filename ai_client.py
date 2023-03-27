@@ -71,12 +71,12 @@ def server():
                     data = json.loads(client.recv(4096).decode())
                     if data["request"] == 'play':
                         print('play')
-                        data = None
+                        data = {}
                     if data["request"] == 'ping':
                         print(data["request"])
                         client.sendall(pong().encode())
                         print("pong")
-                        data = None
+                        data = {}
             except socket.timeout:
                 pass 
 
