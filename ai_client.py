@@ -2,13 +2,11 @@ import socket
 import json
 
 
-def runner_inscription():
-    port: int = 5000
-
+def runner_inscription(port: int = 3000):
     inscription_info: dict = {
         "request": "subscribe",
-        "port": port,
-        "name": "GPETE",
+        "port": 5000,
+        "name": "AImazing",
         "matricules": ["21151", "21211"]
     }
 
@@ -20,5 +18,10 @@ def runner_inscription():
         if sent == len(info):
             print("Inscription envoyée")
 
-        response = s.recv(4096).decode()
-        print(f"Reçu : {response}")
+        response = json.loads(s.recv(4096).decode())
+        ok = response["response"]
+        print(f"Reçu : {ok}")
+
+
+if __name__ == '__main__':
+    runner_inscription()
