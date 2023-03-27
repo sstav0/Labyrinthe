@@ -22,6 +22,10 @@ def runner_inscription(port: int = 3000):
         ok = response["response"]
         print(f"Reçu : {ok}")
 
+def ok(): 
+    print()
+def daccord():
+    print('daccord')
 
 if __name__ == '__main__':
     runner_inscription()
