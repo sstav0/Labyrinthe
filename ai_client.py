@@ -23,7 +23,7 @@ def runner_inscription(port: int = 3000):
         print(f"Reçu : {ok}")
 
 def ok(): 
-    print('ok')
+    print()
 
 if __name__ == '__main__':
     runner_inscription()
