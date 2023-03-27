@@ -14,7 +14,7 @@ def move(state: dict) -> dict:
         - new position of the tile
     """
     def move_calculator() -> list:
-        return [state["tile"], "A", 1]
+        return [state["state"]["tile"], "A", 1]
 
     next_move = {
         "tile": move_calculator()[0],
