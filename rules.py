@@ -59,12 +59,15 @@ def move(initialPos, board):
         list of the legal moves; if the list is empty, you are trapped! 
     """
     board_legalMoves = []
-    for orientation, value in board[initialPos].items(): 
-        if value == True : 
-            nextTile = nextIndex(initialPos, orientation)
-            if board[nextTile][oppositeDirection(orientation)] == True:
-                board_legalMoves.append(nextIndex(initialPos, orientation))
+    for direction, value in board[initialPos].items():  #* iters through the dictionary of the initial tile
+        if value == True : #* if the value is true means that there is no wall in that orientation 
+            nextTile = nextIndex(initialPos, direction) #* nextTile is the index (= position) of your next position if you move in the direction 
+            if board[nextTile][oppositeDirection(direction)] == True: #* checks if there is a wall in the direction on the next Tile (/!\ the next tile's direction is the opposite of the previous tile's direction)
+                board_legalMoves.append(nextIndex(initialPos, direction)) #* if there is no wall, it adds the next tile's index in the legal moves list
     return board_legalMoves
+
+def insertTile(dict, pos, board):
+    
 
                 
 board = [
