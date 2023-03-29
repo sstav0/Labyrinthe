@@ -43,32 +43,32 @@ def oppositeDirection(direction):
             opposite = key 
     return opposite
 
-def whichSide(pos):
-    """function that returns the delta = nextPos - initialPos when the new tile is inserted
+def columnlist(pos):
+    """function that returns a list of the tile's indexes of a column or a row with pos, the first tile's index of the row/column
 
     Args:
         pos (int): index of the position where the new tile is inserted
 
     Returns:
-        delta(int): delta = nextPos - initialPos 
+        delta(list)
     """
-    delta: int = 0
+    delta = []
     
     upSide = [1, 3, 5]
     leftSide = [7, 21, 35]
     rightSide = [13, 27, 41]
     downSide = [43, 45, 47]
     if pos in upSide : 
-        delta = +7
+        delta = list(range(pos, pos+42+7, 7))
         return delta
-    elif pos in leftSide:
-        delta = +1
+    if pos in leftSide:
+        delta = list(range(pos, pos+7+1, 1))
         return delta 
-    elif pos in rightSide: 
-        delta =-1 
+    if pos in rightSide: 
+        delta = list(range(pos, pos-7-1, -1))
         return delta 
-    else : 
-        delta = -7
+    if pos in downSide: 
+        delta = list(range(pos, pos-42-7, -7))
         return delta 
     
     
@@ -89,20 +89,43 @@ def move(initialPos, board):
         list of the legal moves; if the list is empty, you are trapped! 
     """
     board_legalMoves = []
-    for direction, value in board[initialPos].items():  #* iters through the dictionary of the initial tile
-        if value == True : #* if the value is true means that there is no wall in that orientation 
-            nextTile = nextIndex(initialPos, direction) #* nextTile is the index (= position) of your next position if you move in the direction 
-            if board[nextTile][oppositeDirection(direction)] == True: #* checks if there is a wall in the direction on the next Tile (/!\ the next tile's direction is the opposite of the previous tile's direction)
-                board_legalMoves.append(nextIndex(initialPos, direction)) #* if there is no wall, it adds the next tile's index in the legal moves list
+    for direction, value in board[initialPos].items():                      #* iters through the dictionary of the initial tile
+        if value == True :                                                  #* if the value is true means that there is no wall in that orientation 
+            nextTile = nextIndex(initialPos, direction)                     #* nextTile is the index (= position) of your next position if you move in the direction 
+            if board[nextTile][oppositeDirection(direction)] == True:       #* checks if there is a wall in the direction on the next Tile (/!\ the next tile's direction is the opposite of the previous tile's direction)
+                board_legalMoves.append(nextIndex(initialPos, direction))   #* if there is no wall, it adds the next tile's index in the legal moves list
     return board_legalMoves
 
 
 def insertTile(tile, pos, board):
+    """function that takes the free tile, the position where you want to insert the free tile and the actual board in parameters and then 
+    returns the updated board (after shifting the row/column)
+
+    Args:
+        tile (dict): description of the tile (with directions and walls)
+        pos (int): index position on the board where you want to insert the free tile
+        board (list): description of the actual board
+
+    Returns:
+        updated board (list): the updated board, after shifting the row/column
+    """
+    global nextTile                                                     #*making the variable containing the next free tile global 
+                                                                        #? maybe the function could return the nextTile variable instead of making it global
+    indexes = columnlist(pos)                                           #* list of the tile's indexes of the row/column that's gonna be shifted
+    savedBoard = []                                                     #* empty list that's gonna be filled with the original tiles of the row/column that's gonna be shifted
     
+    for index in indexes :                                              
+        savedBoard.append(board[index])                                 #*filling in the savedBoard list with the orignal tiles of the row/column 
+    nextTile = savedBoard.pop()                                         #*taking the last tile (the one that's gonna fall of the board) off the list and saving it in nextTile for later on
+    savedBoard.insert(0, tile)                                          #*putting the previous free tile in the beginning/end of the column/row (depending on which side you insert the free tile)
+    
+    for i, index in zip(list(range(0, len(indexes), 1)),indexes) :      #*iterating through two lists at the same time : the first one is a list containing the indexes of the indexes list (we also could have created a variable i=0 outside of the loop and incrementing it at each turn of the loop)
+        board[index] = savedBoard[i]                                    #*updating the original board with the shifted row/column
+    return board                                          
 
 
 board = [
-    {'N': False, 'E': True, 'S': True, 'W': False, 'item': None}, 
+    {'N': False, 'E': True, 'S': True, 'W': False, 'item': None},       
     {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, 
     {'N': False, 'E': True, 'S': True, 'W': True, 'item': 0}, 
     {'N': True, 'E': True, 'S': False, 'W': False, 'item': 17}, 
@@ -154,3 +177,4 @@ board = [
 ]
 
 print(move(27,board))
+print(insertTile("O", 47, list(range(0, 49, 1))))
