@@ -3,12 +3,15 @@ import random
 def nextIndex(initialPos, direction): 
     """Function that computes the index of the next position with the current position and the direction as inputs
 
-    Args:
+    Parameters
+    ----------
         initialPos (int): index of the initial position 
         direction (string): abbreviation of the direction  
 
-    Returns:
-        int: index of the next position 
+    Returns
+    -------
+    int
+        index of the next position 
     """
     
     if direction == "N":
@@ -44,13 +47,17 @@ def oppositeDirection(direction):
     return opposite
 
 def columnlist(pos):
-    """function that returns a list of the tile's indexes of a column or a row with pos, the first tile's index of the row/column
+    """This function returns a list of the tile's indexes of a column or a row with pos, the first tile's index of the row/column
 
-    Args:
-        pos (int): index of the position where the new tile is inserted
+    Parameters
+    ----------
+    pos : int
+        index of the position where the new tile is inserted
 
-    Returns:
-        delta(list)
+    Returns
+    -------
+    list 
+        delta 
     """
     delta = []
     
@@ -98,16 +105,22 @@ def move(initialPos, board):
 
 
 def insertTile(tile, pos, board):
-    """function that takes the free tile, the position where you want to insert the free tile and the actual board in parameters and then 
+    """This function takes the free tile, the position where you want to insert the free tile and the actual board in parameters and then 
     returns the updated board (after shifting the row/column)
 
-    Args:
-        tile (dict): description of the tile (with directions and walls)
-        pos (int): index position on the board where you want to insert the free tile
-        board (list): description of the actual board
+    Parameters
+    ----------
+    tile : dict
+        description of the tile (with directions and walls)
+    pos : int
+        index position on the board where you want to insert the free tile
+    board : list
+        description of the actual board
 
-    Returns:
-        updated board (list): the updated board, after shifting the row/column
+    Returns
+    -------
+    board : list
+        the updated board, after shifting the row/column
     """
     global nextTile                                                     #*making the variable containing the next free tile global 
                                                                         #? maybe the function could return the nextTile variable instead of making it global
