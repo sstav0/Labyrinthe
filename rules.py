@@ -44,10 +44,33 @@ def oppositeDirection(direction):
     return opposite
 
 def whichSide(pos):
+    """function that returns the delta = nextPos - initialPos when the new tile is inserted
+
+    Args:
+        pos (int): index of the position where the new tile is inserted
+
+    Returns:
+        delta(int): delta = nextPos - initialPos 
+    """
+    delta: int = 0
+    
     upSide = [1, 3, 5]
     leftSide = [7, 21, 35]
     rightSide = [13, 27, 41]
     downSide = [43, 45, 47]
+    if pos in upSide : 
+        delta = +7
+        return delta
+    elif pos in leftSide:
+        delta = +1
+        return delta 
+    elif pos in rightSide: 
+        delta =-1 
+        return delta 
+    else : 
+        delta = -7
+        return delta 
+    
     
         
 def move(initialPos, board): 
@@ -74,6 +97,7 @@ def move(initialPos, board):
     return board_legalMoves
 
 
+def insertTile(tile, pos, board):
     
 
 
