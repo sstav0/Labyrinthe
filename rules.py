@@ -42,6 +42,13 @@ def oppositeDirection(direction):
         elif direction == value:
             opposite = key 
     return opposite
+
+def whichSide(pos):
+    upSide = [1, 3, 5]
+    leftSide = [7, 21, 35]
+    rightSide = [13, 27, 41]
+    downSide = [43, 45, 47]
+    
         
 def move(initialPos, board): 
     """This function returns a list of the index of the tiles that are accessible => legal moves
@@ -66,10 +73,10 @@ def move(initialPos, board):
                 board_legalMoves.append(nextIndex(initialPos, direction)) #* if there is no wall, it adds the next tile's index in the legal moves list
     return board_legalMoves
 
-def insertTile(dict, pos, board):
+
     
 
-                
+
 board = [
     {'N': False, 'E': True, 'S': True, 'W': False, 'item': None}, 
     {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, 
