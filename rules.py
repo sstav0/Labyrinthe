@@ -11,29 +11,67 @@ def nextIndex(initialPos, direction):
         int: index of the next position 
     """
     
-    if direction == "N" and initialPos not in range(0,7):
-        nextPos = initialPos + 7 
-    if direction == "S" and initialPos not in range(42,48)   : 
+    if direction == "N":
         nextPos = initialPos - 7 
-    if direction == "O" and initialPos%7 != 0: 
+    if direction == "S": 
+        nextPos = initialPos + 7 
+    if direction == "W": 
         nextPos = initialPos - 1 
-    if direction == "E" and (initialPos + 1)%7 != 0 : 
+    if direction == "E": 
         nextPos = initialPos + 1
     return nextPos
-    
-def move(initialPos, board, objectif): 
-    possibleWays = []
-    for orientation, value in board[initialPos]: 
+
+def oppositeDirection(direction):
+    """ This function returns the opposite direction of the parameter 
+
+    Parameters
+    ----------
+    direction : string
+        North, South, East, West 
+
+    Returns
+    -------
+    string
+        North, South, East, West 
+
+    """
+    directions = {"N": "S", "W": "E"}
+    for key, value in directions.items():
+        if direction == key : 
+            opposite = value
+        elif direction == value:
+            opposite = key 
+    return opposite
+        
+def move(initialPos, board): 
+    """This function returns a list of the index of the tiles that are accessible => legal moves
+
+    Parameters
+    ----------
+    initialPos : int
+        index of the initial tile
+    board : list
+        list of the dictionaries referring to the walls and free ways of each tile on the board
+
+    Returns
+    -------
+    list 
+        list of the legal moves; if the list is empty, you are trapped! 
+    """
+    board_legalMoves = []
+    for orientation, value in board[initialPos].items(): 
         if value == True : 
-            possibleWays.append(orientation)
-    
-    return nextIndex(possibleWays[random.randint(0, len(possibleWays))]) 
+            nextTile = nextIndex(initialPos, orientation)
+            if board[nextTile][oppositeDirection(orientation)] == True:
+                board_legalMoves.append(nextIndex(initialPos, orientation))
+    return board_legalMoves
 
                 
 board = [
     {'N': False, 'E': True, 'S': True, 'W': False, 'item': None}, 
     {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, 
-    {'N': False, 'E': True, 'S': True, 'W': True, 'item': 0}, {'N': True, 'E': True, 'S': False, 'W': False, 'item': 17}, 
+    {'N': False, 'E': True, 'S': True, 'W': True, 'item': 0}, 
+    {'N': True, 'E': True, 'S': False, 'W': False, 'item': 17}, 
     {'N': False, 'E': True, 'S': True, 'W': True, 'item': 1}, 
     {'N': True, 'E': False, 'S': True, 'W': True, 'item': 23}, 
     {'N': False, 'E': False, 'S': True, 'W': True, 'item': None}, 
@@ -81,4 +119,4 @@ board = [
     {'N': True, 'E': False, 'S': False, 'W': True, 'item': None}
 ]
 
-print(move(0,board, 1))
+print(move(27,board))
