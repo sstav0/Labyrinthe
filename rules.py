@@ -176,5 +176,5 @@ board = [
     {'N': True, 'E': False, 'S': False, 'W': True, 'item': None}
 ]
 
-print(move(27,board))
+print(move(27,board))                               #! temporary tests
 print(insertTile("O", 47, list(range(0, 49, 1))))
