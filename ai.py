@@ -31,7 +31,7 @@ def move_test(state: dict, player, key = "tile"):                               
     
     gate = list_gates[random.randint(0, len(list_gates)-1)]
     tile = state["tile"]
-    legal_moves = rules.move(state["positions"][player])
+    legal_moves = rules.move(state["positions"][player], state["board"])
     new_pos = legal_moves[random.randint(0, len(legal_moves)-1)]
     
     if key == "tile" : 

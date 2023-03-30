@@ -1,6 +1,7 @@
 import socket
 import json
 import sys
+import argparse
 from ai import move
 from ai import move_test #! temporary test 
 
@@ -12,25 +13,16 @@ def runner_inscription(port: int = 3000):
     port : int, optional
         _description_, by default 3000
     """
-    global infos                        #! garder une seule variable globale
-    global serverPort
-    global number
-    
-    infos = sys.stdin.readline().rstrip("\n").split(" ")  #!Pouvoir mettre directement le numéro de port après le fichier dans le terminal
-    serverPort = int(infos[0])
-    number = int(infos[1])                  #* number of the IA version
-    matricules = (infos[2], infos[3])
     
     inscription_info: dict = {
         "request": "subscribe",
-        "port": serverPort,
-        "name": "AImazing{}".format(number),
-        "matricules": [matricules[0], matricules[1]]
+        "port": args.port,
+        "name": "AImazing{}".format(args.player_number),
+        "matricules": [args.matricule[0], args.matricule[1]]
     }
 
     with socket.socket() as s:
-        s.connect((socket.gethostname(), port))
-
+        s.connect((args.adresseIP, port))
         info = json.dumps(inscription_info).encode()
         sent = s.sendall(info)
         if sent == len(info):
@@ -72,7 +64,7 @@ def server():
     """function that listens on the port that was given in the "runner_inscription" function and sends either "pong" when "ping" is requested or "move" when "play" is requested
     """
     with socket.socket() as s: 
-        s.bind((socket.gethostname(), serverPort))
+        s.bind((args.adresseIP, args.port))
         s.listen()
         s.settimeout(15)
         while True :
@@ -83,7 +75,7 @@ def server():
                     data = json.loads(client.recv(4096).decode())
                     if data["request"] == 'play':
                         print(data["state"])
-                        moveResponse(data["state"], number) #! tries to make a random move with the tests functions => error : the first AI subscribes successfully but the gamer server loses connection with the second AI just after it subscribes "Distant socket closed"
+                        moveResponse(data["state"], args.player_number) #! tries to make a random move with the tests functions => error : the first AI subscribes successfully but the gamer server loses connection with the second AI just after it subscribes "Distant socket closed"
                         data = {}
                     if data["request"] == 'ping':
                         print(data["request"])
@@ -95,5 +87,12 @@ def server():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--adresseIP', type = str, default = socket.gethostname(), help="Adresse IP à utiliser pour cette version")
+    parser.add_argument("--port", type=int, help="Port à utiliser pour cette version")
+    parser.add_argument("--player_number", type=int, help="Le numéro du joueur doit être 0 ou 1; 2 IA jouant ensemble ne peuvent pas avoir le même numéro")
+    parser.add_argument("--matricule", nargs=2, help="Liste contenant les deux matricules de l'IA")
+    args = parser.parse_args()
+    
     runner_inscription()
     server()
