@@ -2,6 +2,7 @@ import socket
 import json
 import sys
 from ai import move
+from ai import move_test #! temporary test 
 
 
 def runner_inscription(port: int = 3000):  
@@ -11,8 +12,9 @@ def runner_inscription(port: int = 3000):
     port : int, optional
         _description_, by default 3000
     """
-    global infos
+    global infos                        #! garder une seule variable globale
     global serverPort
+    global number
     
     infos = sys.stdin.readline().rstrip("\n").split(" ")  #!Pouvoir mettre directement le numéro de port après le fichier dans le terminal
     serverPort = int(infos[0])
@@ -21,8 +23,8 @@ def runner_inscription(port: int = 3000):
     
     inscription_info: dict = {
         "request": "subscribe",
-        "port": int(infos[0]),
-        "name": "AImazing{}".format(int(infos[1])),
+        "port": serverPort,
+        "name": "AImazing{}".format(number),
         "matricules": [matricules[0], matricules[1]]
     }
 
@@ -51,9 +53,19 @@ def pong():
     }
     pong = json.dumps(dictPong)
     return pong
-    
 
-#def play(port: int = 3000): 
+def moveResponse(state, player):                    #! test function 
+    move_dict = {
+        "tile": move_test(state, player),
+        "gate": move_test(state, player, key="gate"),
+        "new_position": move_test(state, player, key="new_pos")
+    }
+    response_dict = {
+        "response": "move",
+        "move": move_dict,
+        "message": player
+    }
+    return response_dict
     
         
 def server():
@@ -62,7 +74,7 @@ def server():
     with socket.socket() as s: 
         s.bind((socket.gethostname(), serverPort))
         s.listen()
-        s.settimeout(0.5)
+        s.settimeout(15)
         while True :
             try :
                 client, address = s.accept()
@@ -70,7 +82,8 @@ def server():
                 with client: 
                     data = json.loads(client.recv(4096).decode())
                     if data["request"] == 'play':
-                        move(data)
+                        print(data["state"])
+                        moveResponse(data["state"], number) #! tries to make a random move with the tests functions => error : the first AI subscribes successfully but the gamer server loses connection with the second AI just after it subscribes "Distant socket closed"
                         data = {}
                     if data["request"] == 'ping':
                         print(data["request"])

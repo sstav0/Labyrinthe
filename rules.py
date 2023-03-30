@@ -189,6 +189,6 @@ board = [
     {'N': True, 'E': False, 'S': False, 'W': True, 'item': None}
 ]
 
-print(move(27,board))                               #! temporary tests
-print(insertTile({'N': True, 'E': True, 'S': False, 'W': False, 'item': 16}, 47, board))
-print(nextTile)
+#print(move(27,board))                               #! temporary tests
+#print(insertTile({'N': True, 'E': True, 'S': False, 'W': False, 'item': 16}, 47, board))
+#print(nextTile)
