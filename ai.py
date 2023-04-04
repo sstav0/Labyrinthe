@@ -58,7 +58,7 @@ def move_test(state: dict, player, key):                               #! test f
         i=0
         found = False
         for index in gates('indexes'): 
-            if state["positions"][player] == rules.columnlist(index) : 
+            if state["positions"][player] in rules.columnlist(index) : 
                 gate = gates('letters')[i]
                 found = True  
             i+=1

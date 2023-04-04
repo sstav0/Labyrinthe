@@ -8,6 +8,7 @@ def board():
         {'N': True, 'E': False, 'S': True, 'W': True, 'item': 23},
         {'N': False, 'E': False, 'S': True, 'W': True, 'item': None},
         {'N': True, 'E': True, 'S': False, 'W': True, 'item': 19},
+        
         {'N': True, 'E': False, 'S': True, 'W': False, 'item': None},
         {'N': False, 'E': False, 'S': True, 'W': True, 'item': None},
         {'N': True, 'E': True, 'S': False, 'W': True, 'item': 22},
