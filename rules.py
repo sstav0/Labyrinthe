@@ -1,5 +1,25 @@
 import random
 
+def gates(parameter):
+    """This function returns either the  list of the gates' letters or the gates' indexes based on the parameters
+
+    Parameters:
+    ----------
+        parameter (string): Either "indexes" for the gates' indexes or "letters" for the gates' letters
+
+    Returns:
+    -------
+    list 
+        gates' indexes or letters 
+    """
+    if parameter == 'indexes': 
+        return [1, 3, 5, 13, 27, 41, 47, 45, 43, 35, 21, 7]
+    elif parameter == 'letters':
+        return ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]
+    else : 
+        print("invalid parameters for 'gates' function, please write 'indexes' or 'letters'")
+    
+
 def nextIndex(initialPos, direction): 
     """Function that computes the index of the next position with the current position and the direction as inputs
 
@@ -13,15 +33,26 @@ def nextIndex(initialPos, direction):
     int
         index of the next position 
     """
+    outlineNorth = [0, 1, 2, 3, 4, 5, 6]
+    outlineWest = [0, 7, 14, 21, 28, 35, 42]
+    outlineEast = [6, 13, 20, 27, 34, 41, 48]
+    outlineSouth = [42, 43, 44, 45, 46, 47, 48]
     
-    if direction == "N":
-        nextPos = initialPos - 7 
-    if direction == "S": 
+    if direction == "N" and initialPos not in outlineNorth:
+        nextPos = initialPos-7 
+        #print(f"NORTH: {outlineNorth}; {nextPos}")
+    elif direction == "S" and initialPos not in outlineSouth:
         nextPos = initialPos + 7 
-    if direction == "W": 
-        nextPos = initialPos - 1 
-    if direction == "E": 
+        #print(f"SOUTH: {outlineSouth}; {nextPos}")
+    elif direction == "W" and initialPos not in outlineWest:
+        nextPos = initialPos-1 
+        #print(f"WEST: {outlineWest}; {nextPos}")
+    elif direction == "E" and initialPos not in outlineEast:
         nextPos = initialPos + 1
+        #print(f"EAST: {outlineEast}; {nextPos}") 
+    else : 
+        #print(f"FAILED; {initialPos}")
+        nextPos = initialPos
     return nextPos
 
 def oppositeDirection(direction):
@@ -60,21 +91,21 @@ def columnlist(pos):
         delta 
     """
     delta = []
-    
     upSide = [1, 3, 5]
     leftSide = [7, 21, 35]
     rightSide = [13, 27, 41]
     downSide = [43, 45, 47]
+    
     if pos in upSide : 
         delta = list(range(pos, pos+42+7, 7))
         return delta
-    if pos in leftSide:
-        delta = list(range(pos, pos+7+1, 1))
+    elif pos in leftSide:
+        delta = list(range(pos, pos+7, 1))
         return delta 
-    if pos in rightSide: 
-        delta = list(range(pos, pos-7-1, -1))
+    elif pos in rightSide: 
+        delta = list(range(pos, pos-7, -1))
         return delta 
-    if pos in downSide: 
+    elif pos in downSide: 
         delta = list(range(pos, pos-42-7, -7))
         return delta 
     
@@ -99,8 +130,9 @@ def move(initialPos, board):
     for direction, value in board[initialPos].items():                      #* iters through the dictionary of the initial tile
         if value == True :                                                  #* if the value is true means that there is no wall in that orientation 
             nextTile = nextIndex(initialPos, direction)                     #* nextTile is the index (= position) of your next position if you move in the direction 
-            if board[nextTile][oppositeDirection(direction)] == True:       #* checks if there is a wall in the direction on the next Tile (/!\ the next tile's direction is the opposite of the previous tile's direction)
-                board_legalMoves.append(nextIndex(initialPos, direction))   #* if there is no wall, it adds the next tile's index in the legal moves list
+            #print(f"---------\ndirection:{direction}\nvalue: {value}\nnextTile: {nextTile}")
+            if board[nextTile][oppositeDirection(direction)] == True and nextTile != initialPos:                  #* checks if there is a wall in the direction on the next Tile (/!\ the next tile's direction is the opposite of the previous tile's direction)
+                board_legalMoves.append(nextTile)                                                                   #* if there is no wall, it adds the next tile's index in the legal moves list
     return board_legalMoves
 
 
@@ -136,59 +168,7 @@ def insertTile(tile, pos, board):
         board[index] = savedBoard[i]                                    #*updating the original board with the shifted row/column
     return board                                          
 
-
-board = [
-    {'N': False, 'E': True, 'S': True, 'W': False, 'item': None},       
-    {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, 
-    {'N': False, 'E': True, 'S': True, 'W': True, 'item': 0}, 
-    {'N': True, 'E': True, 'S': False, 'W': False, 'item': 17}, 
-    {'N': False, 'E': True, 'S': True, 'W': True, 'item': 1}, 
-    {'N': True, 'E': False, 'S': True, 'W': True, 'item': 23}, 
-    {'N': False, 'E': False, 'S': True, 'W': True, 'item': None}, 
-    {'N': True, 'E': True, 'S': False, 'W': True, 'item': 19}, 
-    {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, 
-    {'N': False, 'E': False, 'S': True, 'W': True, 'item': None}, 
-    {'N': True, 'E': True, 'S': False, 'W': True, 'item': 22}, 
-    {'N': True, 'E': False, 'S': False, 'W': True, 'item': 15}, 
-    {'N': False, 'E': True, 'S': False, 'W': True, 'item': None}, 
-    {'N': True, 'E': True, 'S': False, 'W': True, 'item': 18}, 
-    {'N': True, 'E': True, 'S': True, 'W': False, 'item': 2}, 
-    {'N': False, 'E': False, 'S': True, 'W': True, 'item': None}, 
-    {'N': True, 'E': True, 'S': True, 'W': False, 'item': 3}, 
-    {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, 
-    {'N': False, 'E': True, 'S': True, 'W': True, 'item': 4}, 
-    {'N': False, 'E': True, 'S': False, 'W': True, 'item': None}, 
-    {'N': True, 'E': False, 'S': True, 'W': True, 'item': 5}, 
-    {'N': False, 'E': True, 'S': False, 'W': True, 'item': None}, 
-    {'N': True, 'E': False, 'S': False, 'W': True, 'item': None}, 
-    {'N': False, 'E': False, 'S': True, 'W': True, 'item': None}, 
-    {'N': False, 'E': False, 'S': True, 'W': True, 'item': None}, 
-    {'N': False, 'E': True, 'S': False, 'W': True, 'item': None}, 
-    {'N': False, 'E': True, 'S': True, 'W': False, 'item': None}, 
-    {'N': False, 'E': True, 'S': True, 'W': False, 'item': None}, 
-    {'N': True, 'E': True, 'S': True, 'W': False, 'item': 6}, 
-    {'N': False, 'E': True, 'S': True, 'W': False, 'item': None}, 
-    {'N': True, 'E': True, 'S': False, 'W': True, 'item': 7}, 
-    {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, 
-    {'N': True, 'E': False, 'S': True, 'W': True, 'item': 8}, 
-    {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, 
-    {'N': True, 'E': False, 'S': True, 'W': True, 'item': 9}, 
-    {'N': False, 'E': True, 'S': False, 'W': True, 'item': None}, 
-    {'N': True, 'E': True, 'S': False, 'W': False, 'item': None}, 
-    {'N': True, 'E': False, 'S': True, 'W': True, 'item': 21}, 
-    {'N': False, 'E': False, 'S': True, 'W': True, 'item': 13}, 
-    {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, 
-    {'N': True, 'E': False, 'S': False, 'W': True, 'item': 14}, 
-    {'N': True, 'E': False, 'S': True, 'W': True, 'item': 20}, 
-    {'N': True, 'E': True, 'S': False, 'W': False, 'item': None}, 
-    {'N': True, 'E': True, 'S': False, 'W': False, 'item': None}, 
-    {'N': True, 'E': True, 'S': False, 'W': True, 'item': 10}, 
-    {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, 
-    {'N': True, 'E': True, 'S': False, 'W': True, 'item': 11}, 
-    {'N': True, 'E': True, 'S': False, 'W': False, 'item': 12}, 
-    {'N': True, 'E': False, 'S': False, 'W': True, 'item': None}
-]
-
-#print(move(27,board))                               #! temporary tests
+#print(move(21,board))                               #! temporary tests
 #print(insertTile({'N': True, 'E': True, 'S': False, 'W': False, 'item': 16}, 47, board))
 #print(nextTile)
+#print(columnlist(7))
