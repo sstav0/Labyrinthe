@@ -1,11 +1,12 @@
 import random
+import game_board
 
 def gates(parameter):
     """This function returns either the  list of the gates' letters or the gates' indexes based on the parameters
 
     Parameters:
     ----------
-        parameter (string): Either "indexes" for the gates' indexes or "letters" for the gates' letters
+        parameter (string): Either "indexes" for the gates' indexes or "letters" for the gates' letters or "columnLetters"/"columnIndexes" for the gates' letters/indexes that are horizontal or "rowLetters"/"rowIndexes" for the gates' letters/indexes that are horizontal
 
     Returns:
     -------
@@ -16,9 +17,55 @@ def gates(parameter):
         return [1, 3, 5, 13, 27, 41, 47, 45, 43, 35, 21, 7]
     elif parameter == 'letters':
         return ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]
+    elif parameter == 'rowLetters':
+        return ['D', 'E', 'F', 'L', 'K', 'J']
+    elif parameter == 'columnLetters': 
+        return ['A', 'B', 'C', 'I', 'H', 'G']
+    elif parameter == 'rowIndexes':
+        return [13, 27, 41, 7, 21, 35]
+    elif parameter == 'columnIndexes':
+        return [1, 3, 5, 43, 45, 47]
     else : 
         print("invalid parameters for 'gates' function, please write 'indexes' or 'letters'")
+
+def findTarget(list, target):
+    """This functions searches for a target in a list and returns its index if found 
+
+    Parameters
+    ----------
+    list : list
+        list in which the target may be 
+    target : unknown 
+        the element to search for
+
+    Returns
+    -------
+    str 
+        error message 'TARGET NOT FOUND'
     
+    OR
+    
+    unknown 
+        the target
+    """
+    found = False
+    i = 0
+    for elem in list : 
+        if elem == target:
+            found = True
+            return i 
+        i+=1
+    if not found: 
+        return 'TARGET NOT FOUND'
+
+def outlineNorth():
+    return [0, 1, 2, 3, 4, 5, 6]
+def outlineWest():
+    return [0, 7, 14, 21, 28, 35, 42]
+def outlineEast():
+    return [6, 13, 20, 27, 34, 41, 48]
+def outlineSouth():
+    return [42, 43, 44, 45, 46, 47, 48]
 
 def nextIndex(initialPos, direction): 
     """Function that computes the index of the next position with the current position and the direction as inputs
@@ -33,21 +80,17 @@ def nextIndex(initialPos, direction):
     int
         index of the next position 
     """
-    outlineNorth = [0, 1, 2, 3, 4, 5, 6]
-    outlineWest = [0, 7, 14, 21, 28, 35, 42]
-    outlineEast = [6, 13, 20, 27, 34, 41, 48]
-    outlineSouth = [42, 43, 44, 45, 46, 47, 48]
     
-    if direction == "N" and initialPos not in outlineNorth:
+    if direction == "N" and initialPos not in outlineNorth():
         nextPos = initialPos-7 
         #print(f"NORTH: {outlineNorth}; {nextPos}")
-    elif direction == "S" and initialPos not in outlineSouth:
+    elif direction == "S" and initialPos not in outlineSouth():
         nextPos = initialPos + 7 
         #print(f"SOUTH: {outlineSouth}; {nextPos}")
-    elif direction == "W" and initialPos not in outlineWest:
+    elif direction == "W" and initialPos not in outlineWest():
         nextPos = initialPos-1 
         #print(f"WEST: {outlineWest}; {nextPos}")
-    elif direction == "E" and initialPos not in outlineEast:
+    elif direction == "E" and initialPos not in outlineEast():
         nextPos = initialPos + 1
         #print(f"EAST: {outlineEast}; {nextPos}") 
     else : 
@@ -129,7 +172,7 @@ def move(initialPos, board):
     board_legalMoves = []
     for direction, value in board[initialPos].items():                      #* iters through the dictionary of the initial tile
         if value == True :                                                  #* if the value is true means that there is no wall in that orientation 
-            nextTile = nextIndex(initialPos, direction)                     #* nextTile is the index (= position) of your next position if you move in the direction 
+            nextTile = nextIndex(initialPos, direction)                     #* nextTile is your next position if you move in the direction 
             #print(f"---------\ndirection:{direction}\nvalue: {value}\nnextTile: {nextTile}")
             if board[nextTile][oppositeDirection(direction)] == True and nextTile != initialPos:                  #* checks if there is a wall in the direction on the next Tile (/!\ the next tile's direction is the opposite of the previous tile's direction)
                 board_legalMoves.append(nextTile)                                                                   #* if there is no wall, it adds the next tile's index in the legal moves list
@@ -166,9 +209,9 @@ def insertTile(tile, pos, board):
     
     for i, index in zip(list(range(0, len(indexes), 1)),indexes) :      #*iterating through two lists at the same time : the first one is a list containing the indexes of the indexes list (we also could have created a variable i=0 outside of the loop and incrementing it at each turn of the loop)
         board[index] = savedBoard[i]                                    #*updating the original board with the shifted row/column
-    return board                                          
+    return board 
 
 #print(move(21,board))                               #! temporary tests
-#print(insertTile({'N': True, 'E': True, 'S': False, 'W': False, 'item': 16}, 47, board))
+#print(insertTile({'N': True, 'E': True, 'S': False, 'W': False, 'item': 16}, 47, game_board.board()))
 #print(nextTile)
 #print(columnlist(7))
