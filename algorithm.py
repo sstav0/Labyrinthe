@@ -1,39 +1,45 @@
-def foundTreasure(state: dict) -> bool:
+def foundTreasure(board: list, playerPos: list[int], playerIndex: int, targetId: int) -> bool:
     """
-    Determines whether the current position of the player is a treasure
+    Determines if the tile at the position of the player contains a treasure.
 
     Parameters
     ----------
-    state : dict
-        Dictionary containing the state of the game including the position of players, treasure location, and current board
+    board : list
+        Actual state of the board.
+    playerPos : list[int]
+        List containing the index of the tile at the position of each player.
+    playerIndex : int
+        Index of the current player needed to pick the right index from `playerPos`.
+    targetId : int
+        Contains the ID of the treasure to reach (to not be confused with the index of the tile).
 
     Returns
     -------
     bool
-        Returns `True` if the treasure is found (on the current player location), `False` otherwise
+        Returns `True` if the treasure is found (on the current player location), `False` otherwise.
     """
-    # ! '0' should be the index of our player (depending if we play first or second)
-    return state["positions"][0] == state["target"]
-    # TODO Target is the id of the treasure not the id of the tile
+    # return state["board"][state["positions"][state["current"]]]["item"] == state["target"]
+    return board[playerPos[playerIndex]]["item"] == targetId
 
 
-def moveValue(state) -> int:
+# TODO Function that returns the value of a given move depending on the current state of the game
+def moveValue() -> int:
     ...
 
 
 def columnlist(pos) -> list[int]:
     """
-    This function returns a list of the tile's indexes of a column or a row with pos, the first tile's index of the row/column
+    This function returns a list of the tile's indexes of a column or row.
 
     Parameters
     ----------
     pos : int
-        index of the position where the new tile is inserted
+        Index of the position where the new tile is inserted.
 
     Returns
     -------
     list 
-        delta 
+        All indexes of the column/row.
     """
     delta = []
     upSide = [1, 3, 5]
@@ -55,8 +61,32 @@ def columnlist(pos) -> list[int]:
         return delta
 
 
-def gate(action, parameter=None):
-    # Convert gate into index and index into gate. Can also provide row/column gates/indexes.
+def gate(action: str, parameter=None):
+    """
+    Give all gates information depending on the action inserted.
+
+    Parameters
+    ----------
+    action : str
+        Say which information should be returned.
+    parameter : str | int, optional
+        Gate or gate's index if a particular gate is search with `index` or `letter`, by default None.
+
+    Actions
+    -------
+        - `index` : Returns all gates indexes. If a letter is provided in `parameter`, returns that gate index.
+        - `letter` : Returns all gates letters. If an index is provided in `parameter`, returns that gate letter.
+        - `rowLetters` : Returns all row gates letters.
+        - `rowIndexes` : Returns all row gates indexes.
+        - `columnLetters` : Returns all column gates letters.
+        - `columnIndexes` : Returns all column gates indexes.
+
+    Returns
+    -------
+    int | list[int] | str | list[str]
+        Depend on the action.
+    """
+    # Convert gate into index and index into gate
     gate_to_index = {
         "A": 1, "B": 3, "C": 5,
         "D": 13, "E": 27, "F": 41,
@@ -98,40 +128,95 @@ def gate(action, parameter=None):
     elif action == "columnIndexes":
         return [1, 3, 5, 47, 45, 43]
     else:
-        print("Invalid action for gate function, please use `index`, `letter`, `rowLetters`, `rowIndexes`, `columnLetters`, or `columnIndexes`")
+        print("Invalid action for gate function, please use `index`, `letter`, `rowLetters`, `rowIndexes`, `columnLetters` or `columnIndexes`")
 
 
-def apply(move: dict, board: list) -> tuple:
-    # Apply a move to the board and returning the new board with the new free tile.
+def apply(move: dict, board: list) -> tuple[list, dict]:
+    """
+    Apply a move to the board and return the new board with the new free tile.
+
+    Parameters
+    ----------
+    move : dict
+        Move to apply to the board, containing the free tile, the gate, and the new position of the player.
+    board : list
+        Current state of the board.
+
+    Returns
+    -------
+    tuple[list, dict]
+        New board and new free tile after applying the move.
+    """
     new_column_row = []
     column_row_indexes = columnlist(gate("index", move["gate"]))
 
     for index in column_row_indexes:
-        new_column_row.append(board[index])
-    freeTile = new_column_row.pop()
+        new_column_row.append(board[index])  # Set the new column/row tiles
+    freeTile = new_column_row.pop()  # Saves the ejected free tile
+    # Insert the free tile at the start of the column/row
     new_column_row.insert(0, move["tile"])
 
     for i, index in zip(list(range(0, len(column_row_indexes), 1)), column_row_indexes):
+        # Updating the original board with the shifted row/column
         board[index] = new_column_row[i]
     return board, freeTile
 
 
-def tile_legal_moves(state) -> list:
-    # ! To replace with function that returns the list of moves dictionaries
-    legal_moves = [['board', 'move'], ['board', 'move']]
+# TODO Function that returns the list of all legal moves dictionaries
+def tile_legal_moves(board: list, tile: dict) -> list:
+    legal_moves = ["move dico", "move2 dico"]
     return legal_moves
 
 
-def negamaxPruning(state, player, depth=4, alpha=float("-inf"), beta=float("inf")):
-    # Returns the value of the board state when we are at the max depth and when we find a treasure
-    if depth == 0 or foundTreasure(state):
-        return -moveValue(state)
+def negamaxPruning(board: list, tile: dict, playerPos: list[int], playerIndex: int, targetId: int, player, depth: int = 4, alpha=float("-inf"), beta=float("inf")):
+    """
+    Negamax algorithm using alpha-beta pruning to find the best move (with the best value) for a given state of the game.
 
-    maxVal = alpha
-    for move in tile_legal_moves(state):
-        value = -negamaxPruning(move[0], player % 2+1, depth-1, -beta, -alpha)
-        maxVal = max(maxVal, value)
+    Parameters
+    ----------
+    board : list
+        Current state of the board.
+    tile : dict
+        Current free tile to be inserted.
+    playerPos : list[int]
+        List containing the index of the tile at the position of each player.
+    playerIndex : int
+        Index of the current player needed to pick the right index from `playerPos`.
+    targetId : int
+        Contains the ID of the treasure to reach (to not be confused with the index of the tile).
+    player : 
+        Current playing player.
+    depth : int, optional
+        Depth of the recursive algorithm, by default 4.
+    alpha : int | float, optional
+        Actual highest move value, by default float("-inf").
+    beta : int | float, optional
+        Actual lowest move value, by default float("inf").
+
+    Returns
+    -------
+    tuple[int, dict]
+        Best value with the best move to play.
+    """
+    # Returns the value of the board state when we are at the max depth and when we find a treasure
+    if depth == 0 or foundTreasure(board, playerPos, playerIndex, targetId):
+        return -moveValue(), None
+
+    bestVal = alpha
+    bestMove = None
+
+    for move in tile_legal_moves(board, tile):
+        child_board, freeTile = apply(move, board)
+        # Checks further until depth = 0
+        value, _ = negamaxPruning(child_board, freeTile, playerPos,
+                                  playerIndex, targetId, player % 2+1, depth-1, -beta, -alpha)
+        # Keep the value and move with the best score for the current player
+        if value > bestVal:
+            bestVal = value
+            bestMove = move
+        # Determines whether we keep searching or we break the branch
         alpha = max(alpha, value)
         if alpha >= beta:
             break
-    return maxVal
+    # Returns the negative so that the next player is choosing the opposite (min/max)
+    return -bestVal, bestMove
