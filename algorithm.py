@@ -27,6 +27,40 @@ def moveValue() -> int:
     ...
 
 
+def orientations(tile: dict) -> list[dict]:
+    """
+    Takes a tile and returns its 4 orientations.
+
+    Parameters
+    ----------
+    tile : dict
+        The tile should be as follows :
+        ```
+        {"N": true, "E": false, "S": true, "W": true, "item": 1}
+        ```
+        The tile for which we want all orientations.
+
+    Returns
+    -------
+    list[dict]
+        List of all 4 orientations of the tile.
+    """
+    N, E, S, W = tile["N"], tile["E"], tile["S"], tile["W"]
+
+    result = []
+    # Rotates 4 times for each orientation
+    for i in range(4):
+        result.append({
+            "N": N,
+            "E": E,
+            "S": S,
+            "W": W,
+            "item": tile["item"]
+        })
+        N, E, S, W = E, S, W, N  # Rotate the boolean values
+    return result
+
+
 def columnlist(pos) -> list[int]:
     """
     This function returns a list of the tile's indexes of a column or row.
@@ -61,7 +95,7 @@ def columnlist(pos) -> list[int]:
         return delta
 
 
-def gate(action: str, parameter=None):
+def gates(action: str, parameter=None):
     """
     Give all gates information depending on the action inserted.
 
@@ -148,7 +182,7 @@ def apply(move: dict, board: list) -> tuple[list, dict]:
         New board and new free tile after applying the move.
     """
     new_column_row = []
-    column_row_indexes = columnlist(gate("index", move["gate"]))
+    column_row_indexes = columnlist(gates("index", move["gate"]))
 
     for index in column_row_indexes:
         new_column_row.append(board[index])  # Set the new column/row tiles
@@ -163,8 +197,18 @@ def apply(move: dict, board: list) -> tuple[list, dict]:
 
 
 # TODO Function that returns the list of all legal moves dictionaries
-def tile_legal_moves(board: list, tile: dict) -> list:
-    legal_moves = ["move dico", "move2 dico"]
+def tile_legal_moves(board: list, tile: dict) -> list[dict]:
+    legal_moves = []
+    all_gates = gates("letter")  # ! Not iterable because of type int/None
+    for orientation in orientations(tile):
+        for gate in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]:  # ! all_gates
+            # TODO Exclude the opposite gate of the one being played previously
+            # TODO Add a new_position loop for the character movement
+            legal_moves.append({
+                "tile": orientation,
+                "gate": gate,
+                "new_position": 45
+            })
     return legal_moves
 
 
@@ -220,3 +264,20 @@ def negamaxPruning(board: list, tile: dict, playerPos: list[int], playerIndex: i
             break
     # Returns the negative so that the next player is choosing the opposite (min/max)
     return -bestVal, bestMove
+
+
+if __name__ == "__main__":
+    print(orientations({
+        "N": True,
+        "E": False,
+        "S": True,
+        "W": True,
+        "item": 1
+    }))
+    print(tile_legal_moves([], {
+        "N": True,
+        "E": False,
+        "S": True,
+        "W": True,
+        "item": 1
+    }))
