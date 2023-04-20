@@ -142,7 +142,6 @@ def gates(action: str, parameter=None):
         for index in gate_to_index.values():
             indexes.append(index)
         return indexes  # [1, 3, 5, 13, 27, 41, 47, 45, 43, 35, 21, 7]
-
     elif action == "letter":
         if parameter is not None:
             return index_to_gate[parameter]
@@ -161,8 +160,8 @@ def gates(action: str, parameter=None):
         return ["A", "B", "C", "G", "H", "I"]
     elif action == "columnIndexes":
         return [1, 3, 5, 47, 45, 43]
-    else:
-        print("Invalid action for gate function, please use `index`, `letter`, `rowLetters`, `rowIndexes`, `columnLetters` or `columnIndexes`")
+    raise Exception(
+        "Invalid action for gate function, please use `index`, `letter`, `rowLetters`, `rowIndexes`, `columnLetters` or `columnIndexes`")
 
 
 def apply(move: dict, board: list) -> tuple[list, dict]:
@@ -199,7 +198,7 @@ def apply(move: dict, board: list) -> tuple[list, dict]:
 # TODO Function that returns the list of all legal moves dictionaries
 def tile_legal_moves(board: list, tile: dict) -> list[dict]:
     legal_moves = []
-    all_gates = gates("letter")  # ! Not iterable because of type int/None
+    all_gates = gates("letter")  # ! Not iterable because of type int
     for orientation in orientations(tile):
         for gate in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]:  # ! all_gates
             # TODO Exclude the opposite gate of the one being played previously
@@ -212,7 +211,7 @@ def tile_legal_moves(board: list, tile: dict) -> list[dict]:
     return legal_moves
 
 
-def negamaxPruning(board: list, tile: dict, playerPos: list[int], playerIndex: int, targetId: int, player, depth: int = 4, alpha=float("-inf"), beta=float("inf")):
+def negamaxPruning(board: list, tile: dict, playerPos: list[int], playerIndex: int, targetId: int, player, depth: int = 4, alpha=float("-inf"), beta=float("inf")) -> tuple:
     """
     Negamax algorithm using alpha-beta pruning to find the best move (with the best value) for a given state of the game.
 
