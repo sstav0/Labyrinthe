@@ -1,3 +1,16 @@
+import time
+
+
+def timeit(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        print(f"Execution time: {end_time - start_time:.2f} seconds")
+        return result
+    return wrapper
+
+
 def foundTreasure(board: list, playerPos: list[int], playerIndex: int, targetId: int) -> bool:
     """
     Determines if the tile at the position of the player contains a treasure.
@@ -95,7 +108,53 @@ def columnlist(pos) -> list[int]:
         return delta
 
 
-def gates(action: str, parameter=None):
+class Gates:
+    def __init__(self) -> None:
+        self.__gate_to_index = {
+            "A": 1, "B": 3, "C": 5,
+            "D": 13, "E": 27, "F": 41,
+            "G": 47, "H": 45, "I": 43,
+            "J": 35, "K": 21, "L": 7
+        }
+        self.__index_to_gate = {
+            1: "A", 3: "B", 5: "C",
+            13: "D", 27: "E", 41: "F",
+            47: "G", 45: "H", 43: "I",
+            35: "J", 21: "K", 7: "L"
+        }
+
+    def index(self, letter: str):
+        return self.__gate_to_index[letter]
+
+    def allIndexes(self):
+        return [1, 3, 5, 13, 27, 41, 47, 45, 43, 35, 21, 7]
+
+    def rowIndexes(self):
+        """
+        Output indexes correspond to `["D", "E", "F", "J", "K", "L"]`
+        """
+        return [13, 27, 41, 35, 21, 7]
+
+    def columnIndexes(self):
+        """
+        Output indexes correspond to `["A", "B", "C", "G", "H", "I"]`
+        """
+        return [1, 3, 5, 47, 45, 43]
+
+    def letter(self, index: int):
+        return self.__index_to_gate[index]
+
+    def allLetters(self):
+        return ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]
+
+    def rowLetters(self):
+        return ["D", "E", "F", "J", "K", "L"]
+
+    def columnLetters(self):
+        return ["A", "B", "C", "G", "H", "I"]
+
+
+def gate(action: str, parameter=None):
     """
     Give all gates information depending on the action inserted.
 
@@ -180,8 +239,9 @@ def apply(move: dict, board: list) -> tuple[list, dict]:
     tuple[list, dict]
         New board and new free tile after applying the move.
     """
+    gates = Gates()
     new_column_row = []
-    column_row_indexes = columnlist(gates("index", move["gate"]))
+    column_row_indexes = columnlist(gates.index(move["gate"]))
 
     for index in column_row_indexes:
         new_column_row.append(board[index])  # Set the new column/row tiles
@@ -198,7 +258,8 @@ def apply(move: dict, board: list) -> tuple[list, dict]:
 # TODO Function that returns the list of all legal moves dictionaries
 def tile_legal_moves(board: list, tile: dict) -> list[dict]:
     legal_moves = []
-    all_gates = gates("letter")  # ! Not iterable because of type int
+    gates = Gates()
+    all_gates = gates.allLetters()
     for orientation in orientations(tile):
         for gate in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]:  # ! all_gates
             # TODO Exclude the opposite gate of the one being played previously
@@ -211,7 +272,7 @@ def tile_legal_moves(board: list, tile: dict) -> list[dict]:
     return legal_moves
 
 
-def negamaxPruning(board: list, tile: dict, playerPos: list[int], playerIndex: int, targetId: int, player, depth: int = 4, alpha=float("-inf"), beta=float("inf")) -> tuple:
+def negamaxPruning(board: list, tile: dict, playerPos: list[int], playerIndex: int, targetId: int, player, depth: int = 3, alpha=float("-inf"), beta=float("inf")) -> tuple:
     """
     Negamax algorithm using alpha-beta pruning to find the best move (with the best value) for a given state of the game.
 
@@ -266,17 +327,5 @@ def negamaxPruning(board: list, tile: dict, playerPos: list[int], playerIndex: i
 
 
 if __name__ == "__main__":
-    print(orientations({
-        "N": True,
-        "E": False,
-        "S": True,
-        "W": True,
-        "item": 1
-    }))
-    print(tile_legal_moves([], {
-        "N": True,
-        "E": False,
-        "S": True,
-        "W": True,
-        "item": 1
-    }))
+    gates = Gates()
+    print(gates.allLetters())
