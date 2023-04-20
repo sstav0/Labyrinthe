@@ -120,39 +120,44 @@ def oppositeDirection(direction):
             opposite = key 
     return opposite
 
-def columnlist(pos):
+def columnlist(pos, parameter = None)->list:
     """This function returns a list of the tile's indexes of a column or a row with pos, the first tile's index of the row/column
 
     Parameters
     ----------
     pos : int
         index of the position where the new tile is inserted
+    parameter : int 
+        Integer to add in the returned list (delta)
 
     Returns
     -------
     list 
-        delta 
+        column or row of the position passed in parameters
     """
     delta = []
     upSide = [1, 3, 5]
     leftSide = [7, 21, 35]
     rightSide = [13, 27, 41]
     downSide = [43, 45, 47]
-    
-    if pos in upSide : 
-        delta = list(range(pos, pos+42+7, 7))
-        return delta
-    elif pos in leftSide:
-        delta = list(range(pos, pos+7, 1))
-        return delta 
-    elif pos in rightSide: 
-        delta = list(range(pos, pos-7, -1))
-        return delta 
-    elif pos in downSide: 
-        delta = list(range(pos, pos-42-7, -7))
-        return delta 
-    
-    
+    if parameter!=None:
+        delta.append(parameter)
+    else:
+        if pos in upSide : 
+            delta = list(range(pos, pos+42+7, 7))
+            return delta
+        elif pos in leftSide:
+            delta = list(range(pos, pos+7, 1))
+            return delta 
+        elif pos in rightSide: 
+            delta = list(range(pos, pos-7, -1))
+            return delta 
+        elif pos in downSide: 
+            delta = list(range(pos, pos-42-7, -7))
+            return delta 
+
+def dontMove(initialPos):
+    return [initialPos]
         
 def move(initialPos, board): 
     """This function returns a list of the index of the tiles that are accessible => legal moves
@@ -169,7 +174,7 @@ def move(initialPos, board):
     list 
         list of the legal moves; if the list is empty, you are trapped! 
     """
-    board_legalMoves = []
+    board_legalMoves = [initialPos]
     for direction, value in board[initialPos].items():                      #* iters through the dictionary of the initial tile
         if value == True :                                                  #* if the value is true means that there is no wall in that orientation 
             nextTile = nextIndex(initialPos, direction)                     #* nextTile is your next position if you move in the direction 

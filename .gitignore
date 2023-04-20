@@ -3,3 +3,4 @@ __pycache__
 .pytest_cache 
 test.py 
 errors.txt
+state example.txt
