@@ -58,10 +58,11 @@ def moveResponse(state):
     """
     player = state["current"]
     print(f'-----------{player}----------')
+    tile, gate, new_pos = move_test(state)
     move_dict = {
-        "tile": move_test(state, "tile"),
-        "gate": move_test(state, "gate"),
-        "new_position": move_test(state, "new_pos")
+        "tile": tile,
+        "gate": gate,
+        "new_position": new_pos
     }
     print("---------------------------\nPLAYER {}: {}\n----------------------".format(player, move_dict["new_position"]))
     response_dict = {

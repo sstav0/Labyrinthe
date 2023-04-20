@@ -51,26 +51,14 @@ def saveMessage(player_number, message):
     with open('errors.txt', 'a') as file:
         file.write('LIST OF ERRORS PLAYER {}: {}\n'.format(player_number, message))
 
-def move_test(state: dict, key):                               #! test function that makes a random moves in the legal_moves list and inserts the free tile in a random gate 
+def move_test(state: dict):                               #! test function that makes a random moves in the legal_moves list and inserts the free tile in a random gate 
     player = state["current"]
     position = state["positions"][player]
-    
-    saveMessage(player, position)
-    
-    legal_moves = rules.move(position, state["board"])
+    tile = state["tile"]
+    gateIndex = randomChoice(gates('index'))
+    gateLetter = gates('letter', gateIndex)
+    board, new_tile = rules.apply({"tile": tile, "gate": gateLetter, "new_position": position}, state["board"])
+    legal_moves = rules.move(position, board) 
     new_pos = randomChoice(legal_moves)
-    restriction = rules.columnlist(new_pos, parameter = position)
-       
-    if key == "tile" : 
-        return state["tile"] 
-    elif key == "gate&position" :
-        legal_moves = rules.move(position, state["board"])  
-        new_pos = randomChoice(legal_moves)
-        restriction = rules.columnlist(new_pos, parameter = position)
-        gateIndex = randomChoice(gates('indexes'), parameter = restriction)
-        return gates('letters')[rules.findTarget(gates('indexes'), gateIndex)]
-    elif key == "new_pos": 
-        return new_pos
-    else : 
-        print("invalid parameters for 'move_test' function, please write 'tile', 'new_pos' or 'gate'")
-
+    return [tile, gateLetter, new_pos]
+   
