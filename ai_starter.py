@@ -9,7 +9,7 @@ import socket
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--IPaddress', type=str, default="172.17.10.59", help="IP address of this AI version")
+    parser.add_argument('--IPaddress', type=str, default=socket.gethostbyname(socket.gethostname()), help="IP address of this AI version")
     parser.add_argument('--aiNumber', type=int, default=2, help="The number of AI to run simultaneously, number must be even")
     args = parser.parse_args()
     
