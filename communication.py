@@ -72,7 +72,7 @@ def moveResponse(state):
     }
     return json.dumps(response_dict)
 
-def saveMessage(player_number, message):
+def saveMessage(player_number, message1, message2=None):
     """This functions saves any message (dictionary) in a .txt file 
 
     Parameters
@@ -80,9 +80,13 @@ def saveMessage(player_number, message):
         player_number (int): number of the player (0 or 1)
         message (dict): message that's going to be saved in the .txt file
     """
-    with open('errors.txt', 'a') as file:
-        file.write('LIST OF ERRORS PLAYER {}: {}\n'.format(player_number, message))
-    
+    if message2 != None: 
+        with open('errors.txt', 'a') as file:
+            file.write('LIST OF ERRORS PLAYER {}: {}\n{}\n'.format(player_number, message1, message2))
+    else: 
+        with open('errors.txt', 'a') as file:
+            file.write('LIST OF ERRORS PLAYER {}: {}\n'.format(player_number, message1))
+        
 def sendMessage(socket, message): 
     """This functions sends a message on a socket 
 
@@ -227,7 +231,8 @@ def server(adresseIP, port, player, serv_timeout = 1, client_timeout = 0.2):
                         if data["request"] == 'play':
                             print(data["request"])
                             response = moveResponse(data["state"]).encode()
-                            saveMessage(player, response)
+                            if data["errors"]!=[]:
+                                saveMessage(player, data["errors"], "position:{}".format(data["state"]["positions"][data["state"]["current"]]))
                             sendMessage(client, response)
                             data["request"]=""
                         elif data["request"] == 'ping':

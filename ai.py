@@ -52,12 +52,11 @@ def saveMessage(player_number, message):
         file.write('LIST OF ERRORS PLAYER {}: {}\n'.format(player_number, message))
 
 def move_test(state: dict):                               #! test function that makes a random moves in the legal_moves list and inserts the free tile in a random gate 
-    player = state["current"]
-    position = state["positions"][player]
+    current = state["current"]
+    position = state["positions"][current]
     tile = state["tile"]
-    gateIndex = randomChoice(gates('index'))
-    gateLetter = gates('letter', gateIndex)
-    board, new_tile = rules.apply({"tile": tile, "gate": gateLetter, "new_position": position}, state["board"])
+    gateLetter = randomChoice(gates('letters'))
+    board = rules.apply({"tile": tile, "gate": gateLetter, "new_position": position}, state["board"])[0]
     legal_moves = rules.move(position, board) 
     new_pos = randomChoice(legal_moves)
     return [tile, gateLetter, new_pos]

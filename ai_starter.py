@@ -5,7 +5,7 @@ from communication import get_free_ports
 import argparse
 import socket
 
-
+#socket.gethostbyname(socket.gethostname())
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
