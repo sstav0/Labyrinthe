@@ -25,7 +25,6 @@ def runner_inscription(adresseIP, portClient, player, matricules, port: int = 30
         sent = s.sendall(info)
         if sent == len(info):
             print("Inscription envoyée")
-
         response = json.loads(s.recv(4096).decode())
         ok = response["response"]
         print(f"Received : {ok}")
@@ -56,22 +55,37 @@ def moveResponse(state):
     str
         json dictionary for the move response
     """
-    player = state["current"]
-    tile, gate, new_pos = moveRandom(state)
-    move_dict = {
+    current = state["current"] 
+    tile, gate, new_pos = moveRandom(state)  #calling "thinking function" to generate the move 
+    move_dict = {                   #making the response's move dictionary 
         "tile": tile,
         "gate": gate,
         "new_position": new_pos
     }
-    print("---------------------------\nPLAYER {}: {}\n----------------------".format(player, move_dict["new_position"]))
+    print("---------------------------\nPLAYER {}: \nOLD POSITION: {}\nNEW POSITION: {}\n----------------------".format(current, state["positions"][current], move_dict["new_position"]))
     response_dict = {
         "response": "move",
         "move": move_dict,
-        "message": player
+        "message": current
     }
-    return json.dumps(response_dict)
+    return json.dumps(response_dict)   #converting the python dict to a json dict
 
 def server(adresseIP, port, player, serv_timeout = 1, client_timeout = 0.2):
+    """This function manages the communication between the AI and the server
+
+    Parameters
+    ----------
+    adresseIP : str
+        IP address of the computer which runs the AI
+    port : int
+        port used by the AI
+    player : int
+        player number
+    serv_timeout : int, optional
+        socket timeout, by default 1
+    client_timeout : float, optional
+        client socket timeout, by default 0.2
+    """
     with socket.socket() as s: 
         s.bind((adresseIP, port))           
         s.listen()
@@ -93,8 +107,8 @@ def server(adresseIP, port, player, serv_timeout = 1, client_timeout = 0.2):
                         if data["request"] == 'play':
                             print(data["request"])
                             response = moveResponse(data["state"]).encode()
-                            if data["errors"]!=[]:
-                                saveMessage(player, data["errors"], "position:{}".format(data["state"]["positions"][data["state"]["current"]]))
+                            if data["errors"]!=[]: #if there is an error
+                                saveMessage(player, data["errors"], "position:{}".format(data["state"]["positions"][data["state"]["current"]])) #saving the error in a .txt file 
                             sendMessage(client, response)
                             data["request"]=""
                         elif data["request"] == 'ping':
@@ -146,8 +160,8 @@ def receiveMessage(socket):
 
     Returns
     -------
-    _type_
-        -
+    json
+        json dict response 
     """
     msg =""
     received = False 
@@ -173,11 +187,11 @@ def get_free_ports(num_ports):
     """
     ports = []
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    for i in range(num_ports):
+    for i in range(num_ports): 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.bind(('', 0))
+            sock.bind(('', 0)) # An empty string '' means that the socket will bind to all available network interfaces. The second argument is the port number. A value of 0 means that the operating system will assign a random unused port number.
             port = sock.getsockname()[1]
-            ports.append(port)
+            ports.append(port)  #creates a list of every empty port
     return ports
 
 def randomMatricule(quantity, parameter = 4000):

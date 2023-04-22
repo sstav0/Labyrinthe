@@ -3,6 +3,24 @@ import game_board
 
 
 class Board:
+    """This class gathers all functions related to the management of the board: 
+    
+        "update"
+        ---
+        Allows to update the board after inserting the tile in one of the available gates
+        
+        "getPos"
+        ---
+        Allows to retrieve the position of the player on the board
+        
+        "getFreeTile"
+        ---
+        Allows to retrieve the dictionary of the additional tile
+        
+        "getBoard"
+        ---
+        Allows to retrieve the dictionary of the board
+    """
     outlineNorth = [0, 1, 2, 3, 4, 5, 6]
     outlineEast = [6, 13, 20, 27, 34, 41, 48]
     outlineSouth = [42, 43, 44, 45, 46, 47, 48]
@@ -16,8 +34,15 @@ class Board:
         self.position = position
 
     def update(self, gate):
-        new_column_row = []
-        oldFree = self.freeTile
+        """This function updates the board after sliding the tile in a gate
+
+        Parameters
+        ----------
+        gate : str      
+            letter of the gate
+        """ 
+        new_column_row = [] #creating a list for the shifted tiles with the old free tile first
+        prevFree = self.freeTile #saves the dictionary of the previous free tile
 
         column_row_indexes = columnlist(Gates().index(gate))
 
@@ -26,14 +51,14 @@ class Board:
             new_column_row.append(self.board[index])
         self.freeTile = new_column_row.pop()  # Saves the ejected free tile
         # Insert the free tile at the start of the column/row
-        new_column_row.insert(0, oldFree)
+        new_column_row.insert(0, prevFree)
 
         for i, index in zip(list(range(0, len(column_row_indexes), 1)), column_row_indexes):
             # Updating the original board with the shifted row/column
             self.board[index] = new_column_row[i]
 
-        if self.position in column_row_indexes:
-            if self.position not in self.allOutlines:
+        if self.position in column_row_indexes: #checks if the position of the player is on the gate row/column in which the tile is inserted
+            if self.position not in self.allOutlines: #checks if the position is on the outlines of the board and then recalculates it 
                 if gate in Gates().eastGates():
                     self.position = self.position - 1
                 elif gate in Gates().westGates():
@@ -42,7 +67,7 @@ class Board:
                     self.position = self.position + 7
                 elif gate in Gates().southGates():
                     self.position = self.position - 7
-            else:
+            else:                                       #if the player is on the outlines of the board, he may be returned to the beginning of the row/column
                 if gate in Gates().eastGates():
                     if self.position in self.outlineWest:
                         self.position = self.position + 6
@@ -75,6 +100,56 @@ class Board:
 
 
 class Gates:
+    """This class gathers all the functions related to the gates' indexes/letters: 
+
+        "index"
+        ---
+        Returns the index of a gate's letter
+        
+        "letter"
+        ---
+        Returns the letter of a gate's index
+        
+        "allIndexes"
+        ---
+        Returns the indexes of every gate
+        
+        "allLetters"
+        ---
+        Returns the letters of every gate
+        
+        "rowIndexes"
+        ---
+        Returns the indexes of the gates located on the right or left side of the board
+        
+        "columnIndexes"
+        ---
+        Return the indexes of the gates located on the top and bottom side of the board
+        
+        "rowLetters"
+        ---
+        Returns the letters of the gates located on the right or left side of the board
+        
+        "columnLetters"
+        ---
+        Returns the letters of the gates located on the right or left side of the board
+        
+        "eastGates"
+        ---
+        Return the gates located on the right of the board
+        
+        "westGates"
+        ---
+        Return the gates located on the left of the board
+        
+        "northGates"
+        ---
+        Return the gates located on the top of the board
+        
+        "southGates"
+        --- 
+        Return the gates located on the right of the board
+    """
     def __init__(self) -> None:
         self.__gate_to_index = {
             "A": 1, "B": 3, "C": 5,
@@ -164,50 +239,46 @@ def findTarget(list, target):
 
 
 def nextIndex(initialPos, direction):
-    """Function that computes the index of the next position with the current position and the direction as inputs
+    """Returns the index of the next tile a chosen direction
 
     Parameters
     ----------
-        initialPos (int): index of the initial position 
-        direction (string): abbreviation of the direction  
+    initialPos : int
+        index of the initial tile
+    direction : str
+        abbreviation of the direction   
 
     Returns
     -------
     int
-        index of the next position 
+        index of the next tile
     """
 
     if direction == "N" and initialPos not in Board.outlineNorth:
         nextPos = initialPos-7
-        # print(f"NORTH: {outlineNorth}; {nextPos}")
     elif direction == "S" and initialPos not in Board.outlineSouth:
         nextPos = initialPos + 7
-        # print(f"SOUTH: {outlineSouth}; {nextPos}")
     elif direction == "W" and initialPos not in Board.outlineWest:
         nextPos = initialPos-1
-        # print(f"WEST: {outlineWest}; {nextPos}")
     elif direction == "E" and initialPos not in Board.outlineEast:
         nextPos = initialPos + 1
-        # print(f"EAST: {outlineEast}; {nextPos}")
     else:
-        # print(f"FAILED; {initialPos}")
         nextPos = initialPos
     return nextPos
 
 
 def oppositeDirection(direction):
-    """ This function returns the opposite direction of the parameter 
+    """ This function returns the opposite direction of direction given
 
     Parameters
     ----------
-    direction : string
-        North, South, East, West 
+    direction : str
+        "N"; "S"; "W"; "O" 
 
     Returns
-    -------f
-    string
-        North, South, East, West 
-
+    -------
+    str
+        The opposite direction 
     """
     opposite = None
     directions = {"N": "S", "W": "E"}
@@ -252,32 +323,29 @@ def columnlist(pos) -> list:
 
 
 def move(initialPos, board):
-    """This function returns a list of the index of the tiles that are accessible => legal moves
+    """This function returns a list of the possible moves (positions)
 
     Parameters
     ----------
     initialPos : int
-        index of the initial tile
+        initial position
     board : list
         list of the dictionaries referring to the walls and free ways of each tile on the board
 
     Returns
     -------
     list 
-        list of the legal moves; if the list is empty, you are trapped! 
+        list of the legal moves. It contains at least the initial position
     """
     board_legalMoves = [initialPos]
-    # * iters through the dictionary of the initial tile
-    for direction, value in board[initialPos].items():
-        if direction != "item":
-            if value == True:  # * if the value is true means that there is no wall in that orientation
-                # * nextTile is your next position if you move in the direction
-                nextTile = nextIndex(initialPos, direction)
-                # print(f"---------\ndirection:{direction}\nvalue: {value}\nnextTile: {nextTile}")
-                # * checks if there is a wall in the direction on the next Tile (/!\ the next tile's direction is the opposite of the previous tile's direction)
-                if board[nextTile][oppositeDirection(direction)] == True and nextTile != initialPos:
-                    # * if there is no wall, it adds the next tile's index in the legal moves list
-                    board_legalMoves.append(nextTile)
+    
+    for direction, value in board[initialPos].items(): #iters through the dictionary of the initial tile
+        if direction != "item": #checks if it's not iterating through the item of the tile
+            if value == True:  #if the value is true means that there is no wall in that orientation
+                nextTile = nextIndex(initialPos, direction) #nextTile is your next position if you'd move in the direction
+                if board[nextTile][oppositeDirection(direction)] == True and nextTile != initialPos: #checks if there is a wall in the direction on the next Tile (/!\ the next tile's direction is the opposite of the previous tile's direction)
+                    
+                    board_legalMoves.append(nextTile) #if there is no wall, it adds the next tile's index in the legal moves list
         else:
             pass 
     return board_legalMoves
