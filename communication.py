@@ -57,7 +57,6 @@ def moveResponse(state):
         json dictionary for the move response
     """
     player = state["current"]
-    print(f'-----------{player}----------')
     tile, gate, new_pos = moveRandom(state)
     move_dict = {
         "tile": tile,
@@ -71,6 +70,41 @@ def moveResponse(state):
         "message": player
     }
     return json.dumps(response_dict)
+
+def server(adresseIP, port, player, serv_timeout = 1, client_timeout = 0.2):
+    with socket.socket() as s: 
+        s.bind((adresseIP, port))           
+        s.listen()
+        s.settimeout(serv_timeout)
+        while True :
+            try : 
+                client, address = s.accept()
+                client.settimeout(client_timeout)
+                with client:
+                    msg =""
+                    received = False
+                    while not received:
+                        try:
+                            msg+=client.recv(4096).decode()
+                        except socket.timeout:
+                            received = True
+                    if msg!="":
+                        data = json.loads(msg)
+                        if data["request"] == 'play':
+                            print(data["request"])
+                            response = moveResponse(data["state"]).encode()
+                            if data["errors"]!=[]:
+                                saveMessage(player, data["errors"], "position:{}".format(data["state"]["positions"][data["state"]["current"]]))
+                            sendMessage(client, response)
+                            data["request"]=""
+                        elif data["request"] == 'ping':
+                            print(data["request"])
+                            client.sendall(pong().encode())
+                            print("pong")
+                            data["request"]=""
+            except socket.timeout:
+                pass
+
 
 def saveMessage(player_number, message1, message2=None):
     """This functions saves any message (dictionary) in a .txt file 
@@ -209,37 +243,5 @@ def matriculeGenerator(number):
     return matricules
 
 
-def server(adresseIP, port, player, serv_timeout = 1, client_timeout = 0.2):
-    with socket.socket() as s: 
-        s.bind((adresseIP, port))           
-        s.listen()
-        s.settimeout(serv_timeout)
-        while True :
-            try : 
-                client, address = s.accept()
-                client.settimeout(client_timeout)
-                with client:
-                    msg =""
-                    received = False
-                    while not received:
-                        try:
-                            msg+=client.recv(4096).decode()
-                        except socket.timeout:
-                            received = True
-                    if msg!="":
-                        data = json.loads(msg)
-                        if data["request"] == 'play':
-                            print(data["request"])
-                            response = moveResponse(data["state"]).encode()
-                            if data["errors"]!=[]:
-                                saveMessage(player, data["errors"], "position:{}".format(data["state"]["positions"][data["state"]["current"]]))
-                            sendMessage(client, response)
-                            data["request"]=""
-                        elif data["request"] == 'ping':
-                            print(data["request"])
-                            client.sendall(pong().encode())
-                            print("pong")
-                            data["request"]=""
-            except socket.timeout:
-                pass
+
 

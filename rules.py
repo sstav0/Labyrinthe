@@ -13,52 +13,59 @@ class Board:
         self.freeTile = freeTile
         self.position = position        
     
-    def update(self, gate, pos):
+    def update(self, gate):
         new_column_row = []
+        oldFree = self.freeTile
     
         column_row_indexes = columnlist(Gates().index(gate))
 
         for index in column_row_indexes:
             new_column_row.append(self.board[index])  # Set the new column/row tiles
-        freeTile = new_column_row.pop()  # Saves the ejected free tile
+        self.freeTile = new_column_row.pop()  # Saves the ejected free tile
         # Insert the free tile at the start of the column/row
-        new_column_row.insert(0, self.freeTile)
+        new_column_row.insert(0, oldFree)
 
         for i, index in zip(list(range(0, len(column_row_indexes), 1)), column_row_indexes):
             # Updating the original board with the shifted row/column
             self.board[index] = new_column_row[i]
 
-        if pos not in self.allOutlines:
-            if gate in Gates().eastGates():
-                new_pos = pos - 1 
-            elif gate in Gates().westGates():
-                new_pos = pos +1
-            elif gate in Gates().northGates(): 
-                new_pos = pos + 7 
-            elif gate in Gates().southGates():
-                new_pos = pos - 7
-        else : 
-            if gate in Gates().eastGates():
-                if pos in self.outlineWest:
-                    new_pos = pos + 6
-                else:
-                    new_pos = pos - 1 
-            elif gate in Gates().westGates():
-                if pos in self.outlineEast:
-                    new_pos = pos - 6
-                else : 
-                    new_pos = pos + 1 
-            elif gate in Gates().northGates(): 
-                if pos in self.outlineSouth:
-                    new_pos = pos - 42 
-                else:
-                    new_pos = pos + 7 
-            elif gate in Gates().southGates():
-                if pos in self.outlineNorth:
-                    new_pos = pos + 42 
-                else: 
-                    new_pos = pos - 7 
-        return [self.board, freeTile, new_pos]
+        if self.position in column_row_indexes:
+            if self.position not in self.allOutlines:
+                if gate in Gates().eastGates():
+                    self.position = self.position - 1 
+                elif gate in Gates().westGates():
+                    self.position = self.position +1
+                elif gate in Gates().northGates(): 
+                    self.position = self.position + 7 
+                elif gate in Gates().southGates():
+                    self.position = self.position - 7
+            else : 
+                if gate in Gates().eastGates():
+                    if self.position in self.outlineWest:
+                        self.position = self.position + 6
+                    else:
+                        self.position = self.position - 1 
+                elif gate in Gates().westGates():
+                    if self.position in self.outlineEast:
+                        self.position = self.position - 6
+                    else : 
+                        self.position = self.position + 1 
+                elif gate in Gates().northGates(): 
+                    if self.position in self.outlineSouth:
+                        self.position = self.position - 42 
+                    else:
+                        self.position = self.position + 7 
+                elif gate in Gates().southGates():
+                    if self.position in self.outlineNorth:
+                        self.position = self.position + 42 
+                    else: 
+                        self.position = self.position - 7 
+    def getPos(self):
+        return self.position
+    def getFreeTile(self):
+        return self.freeTile
+    def getBoard(self):
+        return self.board
                     
 class Gates:
     def __init__(self) -> None:
@@ -257,4 +264,3 @@ def move(initialPos, board):
                 board_legalMoves.append(nextTile)                                                                   #* if there is no wall, it adds the next tile's index in the legal moves list
     return board_legalMoves
 
-print(columnlist(1))
