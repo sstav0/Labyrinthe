@@ -1,6 +1,133 @@
 import random
 import game_board
 
+class Board:
+    def __init__(self, board, freeTile, position) -> None:
+        self.board = board
+        self.freeTile = freeTile
+        self.position = position
+        
+        self.outlineNorth = [0, 1, 2, 3, 4, 5, 6]
+        self.outlineEast = [6, 13, 20, 27, 34, 41, 48]
+        self.outlineSouth = [42, 43, 44, 45, 46, 47, 48]
+        self.outlineEast = [6, 13, 20, 27, 34, 41, 48]
+        self.outlines = [0, 1, 2, 3, 4, 5, 6, 7, 14, 21, 28, 35, 42, 43, 44, 45, 46, 47, 48, 41, 34, 27, 20, 13]
+        
+    def outlineNorth(self):
+        return self.outlineNorth
+    def outlineWest(self):
+        return self.outlineWest
+    def outlineEast(self):
+        return self.outlineEast
+    def outlineSouth(self):
+        return self.outlineSouth
+    def outlines(self):
+        return self.outlines
+            
+            
+    
+    def update(self, gate, pos):
+        new_column_row = []
+    
+        column_row_indexes = columnlist(Gates().index(move["gate"]))
+
+        for index in column_row_indexes:
+            new_column_row.append(self.board[index])  # Set the new column/row tiles
+        freeTile = new_column_row.pop()  # Saves the ejected free tile
+        # Insert the free tile at the start of the column/row
+        new_column_row.insert(0, self.freeTile)
+
+        for i, index in zip(list(range(0, len(column_row_indexes), 1)), column_row_indexes):
+            # Updating the original board with the shifted row/column
+            self.board[index] = new_column_row[i]
+
+        if pos not in self.outlines:
+            if gate in Gates().eastGates():
+                new_pos = pos - 1 
+            elif gate in Gates().westGates():
+                new_pos = pos +1
+            elif gate in Gates().northGates(): 
+                new_pos = pos + 7 
+            elif gate in Gates().southGates():
+                new_pos = pos - 7
+        else : 
+            if gate in Gates().eastGates():
+                if pos in self.outlineWest:
+                    new_pos = pos + 6
+                else:
+                    new_pos = pos - 1 
+            elif gate in Gates().westGates():
+                if pos in self.outlineEast:
+                    new_pos = pos - 6
+                else : 
+                    new_pos = pos + 1 
+            elif gate in Gates().northGates(): 
+                if pos in self.outlineSouth:
+                    new_pos = pos - 42 
+                else:
+                    new_pos = pos + 7 
+            elif gate in Gates().southGates():
+                if pos in self.outlineNorth:
+                    new_pos = pos + 42 
+                else: 
+                    new_pos = pos - 7 
+        return [self.board, freeTile, new_pos]
+                    
+class Gates:
+    def __init__(self) -> None:
+        self.__gate_to_index = {
+            "A": 1, "B": 3, "C": 5,
+            "D": 13, "E": 27, "F": 41,
+            "G": 47, "H": 45, "I": 43,
+            "J": 35, "K": 21, "L": 7
+        }
+        self.__index_to_gate = {
+            1: "A", 3: "B", 5: "C",
+            13: "D", 27: "E", 41: "F",
+            47: "G", 45: "H", 43: "I",
+            35: "J", 21: "K", 7: "L"
+        }
+
+    def index(self, letter: str):
+        return self.__gate_to_index[letter]
+
+    def allIndexes(self):
+        return [1, 3, 5, 13, 27, 41, 47, 45, 43, 35, 21, 7]
+
+    def rowIndexes(self):
+        """
+        Output indexes correspond to `["D", "E", "F", "J", "K", "L"]`
+        """
+        return [13, 27, 41, 35, 21, 7]
+
+    def columnIndexes(self):
+        """
+        Output indexes correspond to `["A", "B", "C", "G", "H", "I"]`
+        """
+        return [1, 3, 5, 47, 45, 43]
+
+    def letter(self, index: int):
+        return self.__index_to_gate[index]
+    
+    def eastGates(self): 
+        return ["D", "E", "F"]
+    def westGates(self):
+        return ["L", "K", "J"]
+    def northGates(self):
+        return ["A", "B", "C"]
+    def southGates(self):
+        return ["I", "H", "G"]
+
+    def allLetters(self):
+        return ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]
+
+    def rowLetters(self):
+        return ["D", "E", "F", "J", "K", "L"]
+
+    def columnLetters(self):
+        return ["A", "B", "C", "G", "H", "I"]
+
+
 def gates(action: str, parameter=None):
     """
     Give all gates information depending on the action inserted.
@@ -99,15 +226,6 @@ def findTarget(list, target):
     if not found: 
         return 'TARGET NOT FOUND'
 
-def outlineNorth():
-    return [0, 1, 2, 3, 4, 5, 6]
-def outlineWest():
-    return [0, 7, 14, 21, 28, 35, 42]
-def outlineEast():
-    return [6, 13, 20, 27, 34, 41, 48]
-def outlineSouth():
-    return [42, 43, 44, 45, 46, 47, 48]
-
 def nextIndex(initialPos, direction): 
     """Function that computes the index of the next position with the current position and the direction as inputs
 
@@ -122,16 +240,16 @@ def nextIndex(initialPos, direction):
         index of the next position 
     """
     
-    if direction == "N" and initialPos not in outlineNorth():
+    if direction == "N" and initialPos not in Board.outlineNorth():
         nextPos = initialPos-7 
         #print(f"NORTH: {outlineNorth}; {nextPos}")
-    elif direction == "S" and initialPos not in outlineSouth():
+    elif direction == "S" and initialPos not in Board.outlineSouth():
         nextPos = initialPos + 7 
         #print(f"SOUTH: {outlineSouth}; {nextPos}")
-    elif direction == "W" and initialPos not in outlineWest():
+    elif direction == "W" and initialPos not in Board.outlineWest():
         nextPos = initialPos-1 
         #print(f"WEST: {outlineWest}; {nextPos}")
-    elif direction == "E" and initialPos not in outlineEast():
+    elif direction == "E" and initialPos not in Board.outlineEast():
         nextPos = initialPos + 1
         #print(f"EAST: {outlineEast}; {nextPos}") 
     else : 
@@ -197,8 +315,6 @@ def columnlist(pos, parameter = None)->list:
             delta = list(range(pos, pos-42-7, -7))
             return delta 
 
-def dontMove(initialPos):
-    return [initialPos]
         
 def move(initialPos, board): 
     """This function returns a list of the index of the tiles that are accessible => legal moves
@@ -225,39 +341,7 @@ def move(initialPos, board):
     return board_legalMoves
 
 
-def insertTile(tile, pos, board):
-    """This function takes the free tile, the position where you want to insert the free tile and the actual board in parameters and then 
-    returns the updated board (after shifting the row/column)
-
-    Parameters
-    ----------
-    tile : dict
-        description of the tile (with directions and walls)
-    pos : int
-        index position on the board where you want to insert the free tile
-    board : list
-        description of the actual board
-
-    Returns
-    -------
-    board : list
-        the updated board, after shifting the row/column
-    """
-    global nextTile                                                     #*making the variable containing the next free tile global 
-                                                                        #? maybe the function could return the nextTile variable instead of making it global
-    indexes = columnlist(pos)                                           #* list of the tile's indexes of the row/column that's gonna be shifted
-    savedBoard = []                                                     #* empty list that's gonna be filled with the original tiles of the row/column that's gonna be shifted
-    
-    for index in indexes :                                              
-        savedBoard.append(board[index])                                 #*filling in the savedBoard list with the orignal tiles of the row/column 
-    nextTile = savedBoard.pop()                                         #*taking the last tile (the one that's gonna fall of the board) off the list and saving it in nextTile for later on
-    savedBoard.insert(0, tile)                                          #*putting the previous free tile in the beginning/end of the column/row (depending on which side you insert the free tile)
-    
-    for i, index in zip(list(range(0, len(indexes), 1)),indexes) :      #*iterating through two lists at the same time : the first one is a list containing the indexes of the indexes list (we also could have created a variable i=0 outside of the loop and incrementing it at each turn of the loop)
-        board[index] = savedBoard[i]                                    #*updating the original board with the shifted row/column
-    return board 
-
-def apply(move: dict, board: list) -> tuple[list, dict]:
+def apply(move: dict, board: list, pos) -> list[list, dict, int]:
     """
     Apply a move to the board and return the new board with the new free tile.
     Parameters
@@ -272,8 +356,8 @@ def apply(move: dict, board: list) -> tuple[list, dict]:
         New board and new free tile after applying the move.
     """
     new_column_row = []
-    
-    column_row_indexes = columnlist(gates("index", move["gate"]))
+
+    column_row_indexes = columnlist(Gates().index(move["gate"]))
 
     for index in column_row_indexes:
         new_column_row.append(board[index])  # Set the new column/row tiles

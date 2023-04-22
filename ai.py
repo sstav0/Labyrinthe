@@ -1,11 +1,7 @@
 import random
 import rules
-from rules import gates
-from rules import outlineEast
-from rules import outlineNorth
-from rules import outlineSouth
-from rules import outlineWest
-
+from rules import Gates
+from rules import Board
 
 def randomChoice(liste, parameter = None): 
     """This function returns a random item of a list. If "parameter" != None : the value returned by the function will be different from the value of "parameter"
@@ -55,9 +51,12 @@ def move_test(state: dict):                               #! test function that 
     current = state["current"]
     position = state["positions"][current]
     tile = state["tile"]
-    gateLetter = randomChoice(gates('letters'))
-    board = rules.apply({"tile": tile, "gate": gateLetter, "new_position": position}, state["board"])[0]
-    legal_moves = rules.move(position, board) 
+    gateLetter = randomChoice(Gates().allLetters())
+    board = Board(state["board"], tile, position)
+    new_board, new_tile, position = board.update(gateLetter, position)
+    #board = rules.apply({"tile": tile, "gate": gateLetter, "new_position": position}, state["board"])[0]
+    legal_moves = rules.move(position, new_board) 
     new_pos = randomChoice(legal_moves)
-    return [tile, gateLetter, new_pos]
+    return [new_tile, gateLetter, new_pos]
+
    
