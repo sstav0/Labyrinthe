@@ -1,7 +1,7 @@
 import socket
 import json
 import random
-from ai import moveRandom#! temporary test 
+from ai import moveRandom
 
 
 def runner_inscription(adresseIP, portClient, player, matricules, port: int = 3000):  
