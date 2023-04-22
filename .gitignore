@@ -5,3 +5,4 @@ test.py
 errors.txt
 state example.txt
 batch_starter.bat
+board_function_test.py
