@@ -47,16 +47,19 @@ def saveMessage(player_number, message):
     with open('errors.txt', 'a') as file:
         file.write('LIST OF ERRORS PLAYER {}: {}\n'.format(player_number, message))
 
-def move_test(state: dict):                               #! test function that makes a random moves in the legal_moves list and inserts the free tile in a random gate 
+def moveRandom(state: dict):                               #! test function that makes a random moves in the legal_moves list and inserts the free tile in a random gate 
     current = state["current"]
     position = state["positions"][current]
     tile = state["tile"]
-    gateLetter = randomChoice(Gates().allLetters())
+    gate = randomChoice(Gates().allLetters())
     board = Board(state["board"], tile, position)
-    new_board, new_tile, position = board.update(gateLetter, position)
+    print(f"GATELETTER: {gate}")
+    print(f"POSITION: {position}")
+    new_board, new_tile, position2 = board.update(gate, position)
     #board = rules.apply({"tile": tile, "gate": gateLetter, "new_position": position}, state["board"])[0]
-    legal_moves = rules.move(position, new_board) 
+    legal_moves = rules.move(position2, new_board) 
     new_pos = randomChoice(legal_moves)
-    return [new_tile, gateLetter, new_pos]
+    return [new_tile, gate, new_pos]
 
-   
+state = {'players': ['AImazing0', 'AImazing3'], 'current': 0, 'positions': [1, 48], 'board': [{'N': False, 'E': True, 'S': True, 'W': False, 'item': None}, {'N': True, 'E': False, 'S': False, 'W': True, 'item': None}, {'N': False, 'E': True, 'S': True, 'W': True, 'item': 0}, {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, {'N': False, 'E': True, 'S': True, 'W': True, 'item': 1}, {'N': True, 'E': True, 'S': False, 'W': False, 'item': None}, {'N': False, 'E': False, 'S': True, 'W': True, 'item': None}, {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, {'N': True, 'E': True, 'S': False, 'W': False, 'item': 14}, {'N': False, 'E': True, 'S': True, 'W': False, 'item': 17}, {'N': True, 'E': True, 'S': False, 'W': True, 'item': 23}, {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, {'N': False, 'E': True, 'S': True, 'W': False, 'item': None}, {'N': True, 'E': True, 'S': True, 'W': False, 'item': 2}, {'N': False, 'E': True, 'S': False, 'W': True, 'item': None}, {'N': True, 'E': True, 'S': True, 'W': False, 'item': 3}, {'N': True, 'E': False, 'S': False, 'W': True, 'item': None}, {'N': False, 'E': True, 'S': True, 'W': True, 'item': 4}, {'N': True, 'E': True, 'S': False, 'W': True, 'item': 21}, {'N': True, 'E': False, 'S': True, 'W': True, 'item': 5}, {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, {'N': False, 'E': True, 'S': False, 'W': True, 'item': None}, {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, {'N': True, 'E': True, 'S': False, 'W': False, 'item': None}, {'N': True, 'E': False, 'S': False, 'W': True, 'item': None}, {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, {'N': True, 'E': True, 'S': True, 'W': False, 'item': 19}, {'N': True, 'E': True, 'S': True, 'W': False, 'item': 6}, {'N': True, 'E': True, 'S': False, 'W': True, 'item': 22}, {'N': True, 'E': True, 'S': False, 'W': True, 'item': 7}, {'N': True, 'E': True, 'S': False, 'W': False, 'item': None}, {'N': True, 'E': False, 'S': True, 'W': True, 'item': 8}, {'N': True, 'E': True, 'S': False, 'W': False, 'item': None}, {'N': True, 'E': False, 'S': True, 'W': True, 'item': 9}, {'N': False, 'E': False, 'S': True, 'W': True, 'item': 15}, {'N': False, 'E': True, 'S': True, 'W': False, 'item': 13}, {'N': True, 'E': True, 'S': False, 'W': False, 'item': 12}, {'N': True, 'E': True, 'S': True, 'W': False, 'item': 20}, {'N': False, 'E': True, 'S': True, 'W': True, 'item': 18}, {'N': False, 'E': True, 'S': True, 'W': False, 'item': None}, {'N': False, 'E': True, 'S': True, 'W': False, 'item': None}, {'N': True, 'E': True, 'S': False, 'W': False, 'item': None}, {'N': False, 'E': True, 'S': True, 'W': False, 'item': 16}, {'N': True, 'E': True, 'S': False, 'W': True, 'item': 10}, {'N': False, 'E': True, 'S': False, 'W': True, 'item': None}, {'N': True, 'E': True, 'S': False, 'W': True, 'item': 11}, {'N': False, 'E': True, 'S': False, 'W': True, 'item': None}, {'N': True, 'E': False, 'S': False, 'W': True, 'item': None}], 'tile': {'N': True, 'E': False, 'S': True, 'W': False, 'item': None}, 'target': 3, 'remaining': [4, 4]}
+print(moveRandom(state))

@@ -1,7 +1,7 @@
 import socket
 import json
 import random
-from ai import move_test #! temporary test 
+from ai import moveRandom#! temporary test 
 
 
 def runner_inscription(adresseIP, portClient, player, matricules, port: int = 3000):  
@@ -58,7 +58,7 @@ def moveResponse(state):
     """
     player = state["current"]
     print(f'-----------{player}----------')
-    tile, gate, new_pos = move_test(state)
+    tile, gate, new_pos = moveRandom(state)
     move_dict = {
         "tile": tile,
         "gate": gate,
