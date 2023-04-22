@@ -47,11 +47,11 @@ def orientations(tile: dict) -> list[dict]:
     Parameters
     ----------
     tile : dict
+        The tile for which we want all orientations.
         The tile should be as follows :
         ```
         {"N": true, "E": false, "S": true, "W": true, "item": 1}
         ```
-        The tile for which we want all orientations.
 
     Returns
     -------
@@ -272,7 +272,7 @@ def tile_legal_moves(board: list, tile: dict) -> list[dict]:
     return legal_moves
 
 
-def negamaxPruning(board: list, tile: dict, playerPos: list[int], playerIndex: int, targetId: int, player, depth: int = 3, alpha=float("-inf"), beta=float("inf")) -> tuple:
+def negamaxPruning(board: list, tile: dict, playerPos: list[int], playerIndex: int, targetId: int, player, depth: int = 3, alpha=float("-inf"), beta=float("inf"), timeLimit: float = 3.0) -> tuple:
     """
     Negamax algorithm using alpha-beta pruning to find the best move (with the best value) for a given state of the game.
 
@@ -296,6 +296,8 @@ def negamaxPruning(board: list, tile: dict, playerPos: list[int], playerIndex: i
         Actual highest move value, by default float("-inf").
     beta : int | float, optional
         Actual lowest move value, by default float("inf").
+    timeLimit : float, optional
+        Time limit in seconds of the recursive algorithm, by default 3.0
 
     Returns
     -------
@@ -306,6 +308,7 @@ def negamaxPruning(board: list, tile: dict, playerPos: list[int], playerIndex: i
     if depth == 0 or foundTreasure(board, playerPos, playerIndex, targetId):
         return -moveValue(), None
 
+    start_time = time.time()
     bestVal = alpha
     bestMove = None
 
@@ -313,7 +316,7 @@ def negamaxPruning(board: list, tile: dict, playerPos: list[int], playerIndex: i
         child_board, freeTile = apply(move, board)
         # Checks further until depth = 0
         value, _ = negamaxPruning(child_board, freeTile, playerPos,
-                                  playerIndex, targetId, player % 2+1, depth-1, -beta, -alpha)
+                                  playerIndex, targetId, player % 2+1, depth-1, -beta, -alpha, timeLimit)
         # Keep the value and move with the best score for the current player
         if value > bestVal:
             bestVal = value
@@ -321,6 +324,11 @@ def negamaxPruning(board: list, tile: dict, playerPos: list[int], playerIndex: i
         # Determines whether we keep searching or we break the branch
         alpha = max(alpha, value)
         if alpha >= beta:
+            break
+
+        # Check if the time limit has been reached
+        elapsed_time = time.time() - start_time
+        if elapsed_time >= timeLimit:
             break
     # Returns the negative so that the next player is choosing the opposite (min/max)
     return -bestVal, bestMove
