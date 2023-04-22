@@ -269,12 +269,15 @@ def move(initialPos, board):
     board_legalMoves = [initialPos]
     # * iters through the dictionary of the initial tile
     for direction, value in board[initialPos].items():
-        if value == True:  # * if the value is true means that there is no wall in that orientation
-            # * nextTile is your next position if you move in the direction
-            nextTile = nextIndex(initialPos, direction)
-            # print(f"---------\ndirection:{direction}\nvalue: {value}\nnextTile: {nextTile}")
-            # * checks if there is a wall in the direction on the next Tile (/!\ the next tile's direction is the opposite of the previous tile's direction)
-            if board[nextTile][oppositeDirection(direction)] == True and nextTile != initialPos:
-                # * if there is no wall, it adds the next tile's index in the legal moves list
-                board_legalMoves.append(nextTile)
+        if direction != "item":
+            if value == True:  # * if the value is true means that there is no wall in that orientation
+                # * nextTile is your next position if you move in the direction
+                nextTile = nextIndex(initialPos, direction)
+                # print(f"---------\ndirection:{direction}\nvalue: {value}\nnextTile: {nextTile}")
+                # * checks if there is a wall in the direction on the next Tile (/!\ the next tile's direction is the opposite of the previous tile's direction)
+                if board[nextTile][oppositeDirection(direction)] == True and nextTile != initialPos:
+                    # * if there is no wall, it adds the next tile's index in the legal moves list
+                    board_legalMoves.append(nextTile)
+        else:
+            pass 
     return board_legalMoves
