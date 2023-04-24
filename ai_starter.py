@@ -13,9 +13,11 @@ if __name__ == "__main__":
                         help="IP address of this AI version")
     parser.add_argument('--aiNumber', type=int, default=2,
                         help="The number of AI to run simultaneously, number must be even")
+    parser.add_argument('--aiLevel', type=int, default=3,
+                        help="The AI level must be chosen among 1, 2, or 3 (3 being the highest level")
     args = parser.parse_args()
 
     ports = get_free_ports(10)
     runner_inscription(
         args.IPaddress, ports[args.aiNumber], args.aiNumber, randomMatricule(2))
-    server(args.IPaddress, ports[args.aiNumber], args.aiNumber)
+    server(args.IPaddress, ports[args.aiNumber], args.aiNumber, args.aiLevel)

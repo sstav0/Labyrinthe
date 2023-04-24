@@ -45,7 +45,7 @@ def pong():
     return pong
 
 
-def moveResponse(state):
+def moveResponse(state: dict, aiLevel: int):
     """This function generates the response dictionary for a move
 
     Parameters
@@ -62,7 +62,7 @@ def moveResponse(state):
     # calling "thinking function" to generate the move
     # tile, gate, new_pos = moveRandom(state)
     move_dict = negamaxPruning(
-        state["board"], state["tile"], state["positions"], state["current"], state["target"])[1]
+        state["board"], state["tile"], state["positions"], state["current"], state["target"], state["remaining"], aiLevel)[1]
     # move_dict = {  # making the response's move dictionary
     #     "tile": tile,
     #     "gate": gate,
@@ -79,7 +79,7 @@ def moveResponse(state):
     return json.dumps(response_dict)
 
 
-def server(adresseIP, port, player, serv_timeout=1, client_timeout=0.2):
+def server(adresseIP, port, player, aiLevel, serv_timeout=1, client_timeout=0.2):
     """This function manages the communication between the AI and the server
 
     Parameters
@@ -115,7 +115,8 @@ def server(adresseIP, port, player, serv_timeout=1, client_timeout=0.2):
                         data = json.loads(msg)
                         if data["request"] == 'play':
                             print(data["request"])
-                            response = moveResponse(data["state"]).encode()
+                            response = moveResponse(
+                                data["state"], aiLevel).encode()
                             if data["errors"] != []:  # if there is an error
                                 saveMessage(player, data["errors"], "position:{}".format(
                                     data["state"]["positions"][data["state"]["current"]]))  # saving the error in a .txt file
