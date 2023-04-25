@@ -6,6 +6,7 @@ from ai import negamaxPruning
 
 def runner_inscription(adresseIP, portClient, player, matricules, port: int = 3000):
     """function that makes the inscription to the game server 
+
     Parameters
     ----------
     port : int, optional

@@ -5,7 +5,9 @@ from rules import Board, foundTreasure, legalMoves
 
 # TODO Function that returns the value of a given move depending on the current state of the game
 def moveValue(level: int, playersScore: list[int], playerIndex: int) -> int:
-    return playersScore[playerIndex] - playersScore[playerIndex % -2 + 1]
+    score = 100*(playersScore[playerIndex] -
+                 playersScore[playerIndex % -2 + 1])
+    return score
 
 
 def timeit(func):
@@ -18,7 +20,7 @@ def timeit(func):
     return wrapper
 
 
-@timeit
+# @timeit
 def negamaxPruning(board: list, tile: dict, playersPos: list[int], playerIndex: int, targetId: int, playersScore: list[int], aiLevel: int, depth: int = 3, alpha=float("-inf"), beta=float("inf"), timeLimit: float = 3.0) -> tuple:
     """
     Negamax algorithm using alpha-beta pruning to find the best move (with the best value) for a given state of the game.
@@ -59,10 +61,10 @@ def negamaxPruning(board: list, tile: dict, playersPos: list[int], playerIndex: 
         return -moveValue(aiLevel, playersScore, playerIndex), None
 
     start_time = time.time()
-    bestVal = alpha
+    bestVal = float("-inf")
     bestMove = None
 
-    for move in legalMoves(current_board.getBoard(), current_board.getPos(), current_board.getFreeTile()):
+    for move in legalMoves(current_board):
         # child_board, freeTile = apply(move, board)
         current_board.update(move["gate"])
         child_board, freeTile = current_board.getBoard(), current_board.getFreeTile()
