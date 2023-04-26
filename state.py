@@ -1,5 +1,6 @@
 from rules import columnList
 from rules import Board
+import rules
 import ai
 
 
@@ -42,5 +43,8 @@ if __name__ == "__main__":
     move = {'tile': {'N': True, 'E': True, 'S': True,
                      'W': False, 'item': 22}, 'gate': 'D', 'new_position': 7}
 
-    print(ai.negamaxPruning(board, state["tile"], state["positions"],
-                            state["current"], state["target"], state["remaining"], 3, depth=10)[1])
+    board[16]["W"]=True
+    #print(showBoard(board))
+    #print(chr(ord("A") + state["target"]))
+    print(ai.negamaxPruning(board, state["tile"], state["positions"], state["current"], state["target"], state["remaining"], 3, depth=3)[1])
+    #print(rules.foundTreasure(board, state["positions"], state["current"], state["target"], state["remaining"]))

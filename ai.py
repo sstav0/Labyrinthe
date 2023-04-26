@@ -3,11 +3,6 @@ import time
 from rules import Board, foundTreasure, legalMoves
 
 
-# TODO Function that returns the value of a given move depending on the current state of the game
-def moveValue(level: int, playersScore: list[int], playerIndex: int) -> int:
-    score = 100*(playersScore[playerIndex] -
-                 playersScore[playerIndex % -2 + 1])
-    return score
 
 
 def timeit(func):
@@ -56,23 +51,25 @@ def negamaxPruning(board: list, tile: dict, playersPos: list[int], playerIndex: 
         Best value with the best move to play.
     """
     current_board = Board(board, tile, playersPos[playerIndex])
+    #print(board[playersPos[playerIndex]], "------------")
+    
     # Returns the value of the board state when we are at the max depth and when we find a treasure
     if depth == 0 or foundTreasure(current_board.getBoard(), playersPos, playerIndex, targetId, playersScore)[0]:
-        remaining = foundTreasure(current_board.getBoard(), playersPos,
-                                  playerIndex, targetId, playersScore)[1]
-        return -moveValue(aiLevel, remaining, playerIndex), None
+        print(f"\nPLAYERSPOS: {playersPos} ------ PLAYERINDEX:{playerIndex} -------- TARGETID: {targetId} ------- PLAYERSSCORE: {playersScore}\n")
+        playersScore = foundTreasure(current_board.getBoard(), playersPos, playerIndex, targetId, playersScore)[1]
+        print(f"AAAAAAAAAAAAAAAAAAAAAA NEW:{playersScore}")
+        return -moveValue(aiLevel, playersPos, playerIndex, targetId), None
 
     start_time = time.time()
     bestVal = float("-inf")
     bestMove = None
-    print(current_board.findItem(targetId))
+    
 
     for move in legalMoves(current_board):
-        # child_board, freeTile = apply(move, board)
         current_board.update(move["gate"])
         child_board, freeTile = current_board.getBoard(), current_board.getFreeTile()
         # Checks further until depth = 0
-        value, _ = negamaxPruning(child_board, freeTile, playersPos,
+        value, _ = negamaxPruning(child_board, freeTile, (move["new_position"], move["new_position"]),
                                   playerIndex % -2 + 1, targetId, playersScore, aiLevel, depth-1, -beta, -alpha)
         # Keep the value and move with the best score for the current player
         if value > bestVal:
@@ -89,3 +86,10 @@ def negamaxPruning(board: list, tile: dict, playersPos: list[int], playerIndex: 
             break
     # Returns the negative so that the next player is choosing the opposite (min/max)
     return -bestVal, bestMove
+
+# TODO Function that returns the value of a given move depending on the current state of the game
+def moveValue(level: int, playersScore: list[int], playerIndex: int, targetID: int) -> int:
+    #playersScore = foundTreasure(board, playersPos, playerIndex, targetId, playersScore)[1]
+    score = 100*(playersScore[playerIndex] -
+            playersScore[playerIndex % -2 + 1])
+    return score

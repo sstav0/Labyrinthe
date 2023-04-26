@@ -289,7 +289,8 @@ def foundTreasure(board: list, playersPos: list[int], playerIndex: int, targetId
     bool
         Returns `True` if the treasure is found (on the current player location), `False` otherwise.
     """
-    remaining[playerIndex] -= 1
+    if board[playersPos[playerIndex]]["item"] == targetId:
+        remaining[playerIndex] -= 1
     return (board[playersPos[playerIndex]]["item"] == targetId, remaining)
 
 
