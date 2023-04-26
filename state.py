@@ -44,7 +44,15 @@ if __name__ == "__main__":
                      'W': False, 'item': 22}, 'gate': 'D', 'new_position': 7}
 
     board[16]["W"]=True
+    
+    # print(showBoard(state["board"]), "\n\n\n")
+    # BoardObject=Board(state["board"], state["tile"], state["positions"][state["current"]])
+    # BoardObject.update("A")
+    # print(showBoard(BoardObject.getBoard()), "\n\n\n")
+    # BoardObject.undo()
+    # print(showBoard(BoardObject.getBoard()))
+    
     #print(showBoard(board))
     #print(chr(ord("A") + state["target"]))
-    print(ai.negamaxPruning(board, state["tile"], state["positions"], state["current"], state["target"], state["remaining"], 3, depth=3)[1])
+    print(ai.negamaxPruning(board, state["tile"], state["positions"], state["current"], state["target"], 3, depth=3)[1])
     #print(rules.foundTreasure(board, state["positions"], state["current"], state["target"], state["remaining"]))

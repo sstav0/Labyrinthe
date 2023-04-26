@@ -128,6 +128,10 @@ class Board:
     def getBoard(self):
         return self.__board
 
+    def undo(self):
+        self.__board = self.__oldBoard
+        self.__freeTile = self.__oldFree
+        self.__position = self.__oldPos
 
 class Gates:
     """This class gathers all the functions related to the gates' indexes/letters: 
@@ -269,7 +273,7 @@ def findTarget(list: list, target):
         return 'TARGET NOT FOUND'
 
 
-def foundTreasure(board: list, playersPos: list[int], playerIndex: int, targetId: int, remaining: list) -> tuple:
+def foundTreasure(board: list, playersPos: list[int], playerIndex: int, targetId: int) ->bool:
     """
     Determines if the tile at the position of the player contains a treasure.
 
@@ -289,9 +293,7 @@ def foundTreasure(board: list, playersPos: list[int], playerIndex: int, targetId
     bool
         Returns `True` if the treasure is found (on the current player location), `False` otherwise.
     """
-    if board[playersPos[playerIndex]]["item"] == targetId:
-        remaining[playerIndex] -= 1
-    return (board[playersPos[playerIndex]]["item"] == targetId, remaining)
+    return board[playersPos[playerIndex]]["item"] == targetId
 
 
 def nextIndex(initialPos: int, direction: str):
