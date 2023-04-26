@@ -1,6 +1,6 @@
 import time
-
 from rules import Board, foundTreasure, legalMoves
+import rules
 
 
 
@@ -14,6 +14,67 @@ def timeit(func):
         return result
     return wrapper
 
+def noMove(board, playersPos, playerIndex, parameter ="bool"):
+    if parameter =="bool":
+        if len(rules.playerLegalMoves(playersPos[playerIndex], board)) == 1:
+            return True
+        else: 
+            return False
+    else:
+        return len(rules.playerLegalMoves(playersPos[playerIndex], board))
+    
+    
+def minimax(board: list, tile: dict, playersPos: list[int], playerIndex:int, targetID: int, opponent:int, aiLevel:int=3, depth: int=3, alpha= float("-inf"), beta=float("inf"), timeLimit: float=0.3)->tuple:
+    
+    current_board = Board(board, tile, playersPos[playerIndex])
+    
+    best_score = float('-inf')
+    best_move = None
+    
+    if depth == 0 or foundTreasure(current_board.getBoard(), playersPos, playerIndex, targetID) or noMove(current_board.getBoard(), playersPos, playerIndex,):
+        if foundTreasure(current_board.getBoard(), playersPos, playerIndex, targetID) and playerIndex != opponent:
+            return 1000, None
+        elif noMove(current_board.getBoard, playersPos, playerIndex) and playerIndex == opponent:
+            return 80, None
+        elif depth == 0 and playerIndex != opponent:
+            itemIndex = current_board.findItem(targetID)
+            return rules.distance(playersPos[playerIndex], itemIndex)
+        else: 
+            return - 10 * noMove(current_board.getBoard, playersPos, playerIndex, parameter="int")
+    
+    
+    #if playerIndex != opponent:     
+    for move in legalMoves(current_board):
+        current_board.update(move["gate"])
+        child_board, freeTile = current_board.getBoard(), current_board.getFreeTile()
+        playersPos[playerIndex]=move["new_position"]
+        
+        score, _ = minimax(child_board, freeTile, playersPos, playerIndex%-2+1, targetID, opponent, depth-1)
+        
+        if score > best_score:
+            best_score, best_move = score, move
+            
+        alpha = max(alpha, score)
+        if beta <= alpha:
+            break
+        current_board.undo()
+    return best_score, best_move
+    
+    # else:
+    #     worst_score = float('inf')
+    #     best_move = None
+    #     for move in legalMoves(current_board):
+    #         current_board.update(move["gate"])
+    #         child_board, freeTile = current_board.getBoard(), current_board.getFreeTile()
+    #         playersPos[playerIndex]=move["new_position"]
+            
+    #         score, _ = minimax(child_board, freeTile, playersPos, playerIndex%-2+1, targetID, opponent, depth-1)
+            
+    #         if score < worst_score:
+    #             worst_score, 
+        
+    
+    
 
 # @timeit
 def negamaxPruning(board: list, tile: dict, playersPos: list[int], playerIndex: int, targetId: int, aiLevel: int, depth: int = 3, alpha=float("-inf"), beta=float("inf"), timeLimit: float = 3.0) -> tuple:
@@ -29,7 +90,7 @@ def negamaxPruning(board: list, tile: dict, playersPos: list[int], playerIndex: 
     playersPos : list[int]
         List containing the index of the tile at the position of each player.
     playerIndex : int
-        Index of the current player needed to pick the right index from `playerPos`.
+        Index of the current player needed to pick the right index from `playersPos`.
     targetId : int
         Contains the ID of the treasure to reach (to not be confused with the index of the tile).
     playersScore : list[int]

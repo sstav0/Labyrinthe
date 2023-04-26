@@ -54,5 +54,11 @@ if __name__ == "__main__":
     
     #print(showBoard(board))
     #print(chr(ord("A") + state["target"]))
-    print(ai.negamaxPruning(board, state["tile"], state["positions"], state["current"], state["target"], 3, depth=6)[1])
+    #print(ai.negamaxPruning(board, state["tile"], state["positions"], state["current"], state["target"], 3, depth=6)[1])
     #print(rules.foundTreasure(board, state["positions"], state["current"], state["target"], state["remaining"]))
+    
+index = 0
+for i in range(10):
+    index = index%-2+1
+    print(index)
+    

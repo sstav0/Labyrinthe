@@ -1,6 +1,6 @@
 import random
 import game_board
-
+import math 
 
 class Board:
     """This class gathers all functions related to the management of the board: 
@@ -478,3 +478,46 @@ def legalMoves(board: object) -> list[dict]:
                     "new_position": playerMove
                 })
     return legal_moves
+
+def cartesian(target:int)->tuple:
+    """This function returns the cartesian coordinates of a tile on the board
+
+    Parameters
+    ----------
+    target : int
+        the position to be converted into Cartesian coordinates
+
+    Returns
+    -------
+    tuple
+        the x and y coordinates 
+    """
+    x = target%7 
+    rows = [range(0, 7), range(7, 14), range(14, 21), range(21, 28), range(28, 35), range(35, 42), range(42, 49)]
+    i = 7
+    for row in rows:
+        i-=1
+        if target in row:
+            y = i 
+    return(x, y)
+
+def distance(pos, item:int)->float:
+    """This function calculates the distance between the player's position and the item he has to find
+
+    Parameters
+    ----------
+    pos : int
+        index position of the player
+    item : int
+        index position of the item targeted
+
+    Returns
+    -------
+    float
+        distance 
+    """
+    cartPos = cartesian(pos)
+    cartItem = cartesian(item)
+    d1 = abs(cartPos[0]-cartItem[0])
+    d2 = abs(cartPos[1]-cartItem[1])
+    return math.sqrt(d1**2+d2**2)
