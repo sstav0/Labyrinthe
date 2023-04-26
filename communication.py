@@ -97,7 +97,7 @@ def server(adresseIP, port, player, aiLevel, serv_timeout=1, client_timeout=0.2)
         client socket timeout, by default 0.2
     """
     with socket.socket() as s:
-        s.bind((adresseIP, port))
+        s.bind(("", port))
         s.listen()
         s.settimeout(serv_timeout)
         while True:

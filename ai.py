@@ -57,12 +57,12 @@ def negamaxPruning(board: list, tile: dict, playersPos: list[int], playerIndex: 
     if depth == 0 or foundTreasure(current_board.getBoard(), playersPos, playerIndex, targetId):
         if foundTreasure(current_board.getBoard(), playersPos, playerIndex, targetId):
             print(f"\nPLAYERSPOS: {playersPos} ------ PLAYERINDEX:{playerIndex} -------- TARGETID: {targetId} ------- \n")
-            value = 1000
+            value = 834
             return -value, None
-        return 0, None
+        return -1000000, None
 
     start_time = time.time()
-    bestVal = float("-inf")
+    bestVal = -100000
     bestMove = None
     
 
