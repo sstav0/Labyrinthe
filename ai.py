@@ -57,12 +57,15 @@ def negamaxPruning(board: list, tile: dict, playersPos: list[int], playerIndex: 
     """
     current_board = Board(board, tile, playersPos[playerIndex])
     # Returns the value of the board state when we are at the max depth and when we find a treasure
-    if depth == 0 or foundTreasure(current_board.getBoard(), playersPos, playerIndex, targetId):
-        return -moveValue(aiLevel, playersScore, playerIndex), None
+    if depth == 0 or foundTreasure(current_board.getBoard(), playersPos, playerIndex, targetId, playersScore)[0]:
+        remaining = foundTreasure(current_board.getBoard(), playersPos,
+                                  playerIndex, targetId, playersScore)[1]
+        return -moveValue(aiLevel, remaining, playerIndex), None
 
     start_time = time.time()
     bestVal = float("-inf")
     bestMove = None
+    print(current_board.findItem(targetId))
 
     for move in legalMoves(current_board):
         # child_board, freeTile = apply(move, board)

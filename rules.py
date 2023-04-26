@@ -98,6 +98,24 @@ class Board:
                     else:
                         self.__position = self.__position - 7
 
+    def findItem(self, item: int):
+        """This function returns the position of [item]
+
+        Parameters
+        ----------
+        item : int
+            item number
+
+        Returns
+        -------
+        int
+            position of the item 
+        """
+
+        for i, tile in enumerate(self.__board):
+            if tile["item"] == item:
+                return i
+
     def changeTile(self, free):
         self.__freeTile = free
 
@@ -251,7 +269,7 @@ def findTarget(list: list, target):
         return 'TARGET NOT FOUND'
 
 
-def foundTreasure(board: list, playersPos: list[int], playerIndex: int, targetId: int) -> bool:
+def foundTreasure(board: list, playersPos: list[int], playerIndex: int, targetId: int, remaining: list) -> tuple:
     """
     Determines if the tile at the position of the player contains a treasure.
 
@@ -271,7 +289,8 @@ def foundTreasure(board: list, playersPos: list[int], playerIndex: int, targetId
     bool
         Returns `True` if the treasure is found (on the current player location), `False` otherwise.
     """
-    return board[playersPos[playerIndex]]["item"] == targetId
+    remaining[playerIndex] -= 1
+    return (board[playersPos[playerIndex]]["item"] == targetId, remaining)
 
 
 def nextIndex(initialPos: int, direction: str):
