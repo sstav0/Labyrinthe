@@ -69,7 +69,7 @@ def moveResponse(state: dict, aiLevel: int):
     # move_dict = negamaxPruning(
     #     state["board"], state["tile"], state["positions"], state["current"], state["target"], state["remaining"], aiLevel)[1]
     
-    move_dict = minimax(state["board"], state["tile"], state["positions"], state["current"], state["target"], opponent(state['current']))[1]
+    move_dict = minimax(state["board"], state["tile"], state["positions"], state["current"], state["target"], opponent(state['current']), depth=aiLevel)[1]
     
     # print("---------------------------\nPLAYER {}: \nOLD POSITION: {}\nNEW POSITION: {}\n----------------------".format(
     #     current, state["positions"][current], move_dict["new_position"]))
