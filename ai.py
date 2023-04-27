@@ -38,20 +38,25 @@ class Minimax:
         best_score = float('-inf')
         
         
-        if depth == 0 or foundTreasure(current_board.getBoard(), playersPos, playerIndex, self.__targetID) or noMove(current_board.getBoard(), playersPos, playerIndex):
-            if foundTreasure(current_board.getBoard(), playersPos, playerIndex, self.__targetID) and playerIndex != self.__opponent:
-                print("found", playersPos[playerIndex])
-                return 1000, None
-            elif noMove(current_board.getBoard(), playersPos, playerIndex) and playerIndex == self.__opponent:
-                return 20, None
-            elif depth == 0 and playerIndex != self.__opponent:
-                itemIndex = current_board.findItem(self.__targetID)
-                if itemIndex != None:
-                    return 200 - 5*rules.distance(playersPos[playerIndex], itemIndex), None
-                else:
-                    return 0, None
+        if depth == 0 or foundTreasure(current_board.getBoard(), playersPos, playerIndex, self.__targetID) or noMove(current_board.getBoard(), playersPos, self.__opponent):
+            itemIndex = current_board.findItem(self.__targetID)
+            if playerIndex is not self.__opponent:
+                return 1000-rules.distance(playersPos[playerIndex], itemIndex), None
             else:
-                return -5*noMove(current_board.getBoard(), playersPos, playerIndex, parameter="int"), None
+                return -30*noMove(current_board.getBoard(), playersPos, playerIndex, parameter="int"), None
+            # if foundTreasure(current_board.getBoard(), playersPos, playerIndex, self.__targetID) and playerIndex != self.__opponent:
+            #     print("found", playersPos[playerIndex])
+            #     return 1000, None
+            # elif noMove(current_board.getBoard(), playersPos, playerIndex) and playerIndex == self.__opponent:
+            #     return 20, None
+            # elif depth == 0 and playerIndex != self.__opponent:
+            #     itemIndex = current_board.findItem(self.__targetID)
+            #     if itemIndex != None:
+            #         return 200 - 5*rules.distance(playersPos[playerIndex], itemIndex), None
+            #     else:
+            #         return 0, None
+            # else:
+            #     return -5*noMove(current_board.getBoard(), playersPos, playerIndex, parameter="int"), None
           
         for move in legalMoves(current_board):
             current_board.update(move["gate"])
