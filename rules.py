@@ -111,10 +111,13 @@ class Board:
         int
             position of the item 
         """
-
+        found = False
         for i, tile in enumerate(self.__board):
             if tile["item"] == item:
+                found = True
                 return i
+        if not found:
+            print(f"ITEM {item} NOT FOUND")
 
     def changeTile(self, free):
         self.__freeTile = free
@@ -240,6 +243,16 @@ class Gates:
 
     def columnLetters(self):
         return ["A", "B", "C", "G", "H", "I"]
+    
+    def exceptGate(self, pos, move):
+        list = []
+        for gate in Gates().allIndexes():
+            if pos in columnList(gate) or move in columnList(gate):
+                pass
+            else:
+                list.append(gate)
+        return list
+    
 
 
 def findTarget(list: list, target):
@@ -477,6 +490,7 @@ def legalMoves(board: object) -> list[dict]:
                     "gate": gate,
                     "new_position": playerMove
                 })
+            board.undo()
     return legal_moves
 
 def cartesian(target:int)->tuple:

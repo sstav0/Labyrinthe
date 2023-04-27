@@ -1,6 +1,7 @@
 import time
-from rules import Board, foundTreasure, legalMoves
+from rules import Board, foundTreasure, legalMoves, Gates
 import rules
+
 
 
 
@@ -23,24 +24,36 @@ def noMove(board, playersPos, playerIndex, parameter ="bool"):
     else:
         return len(rules.playerLegalMoves(playersPos[playerIndex], board))
     
+
+def randomMove(board, tile, playersPos, playerIndex):
+    move = rules.playerLegalMoves(playersPos[playerIndex], board)
+    gate  = Gates().exceptGate(playersPos[playerIndex], move)
+    return {"gate": gate, "tile": tile, "new_position": move}
+
+
     
-def minimax(board: list, tile: dict, playersPos: list[int], playerIndex:int, targetID: int, opponent:int, aiLevel:int=3, depth: int=3, alpha= float("-inf"), beta=float("inf"), timeLimit: float=0.3)->tuple:
+    
+def minimax(board: list, tile: dict, playersPos: list[int], playerIndex:int, targetID: int, opponent:int, aiLevel:int=2, depth:int = 3, alpha= float("-inf"), beta=float("inf"), timeLimit: float=0.3)->tuple:
     
     current_board = Board(board, tile, playersPos[playerIndex])
     
     best_score = float('-inf')
-    best_move = None
+    best_move = randomMove(board, tile, playersPos, playerIndex)
     
     if depth == 0 or foundTreasure(current_board.getBoard(), playersPos, playerIndex, targetID) or noMove(current_board.getBoard(), playersPos, playerIndex,):
         if foundTreasure(current_board.getBoard(), playersPos, playerIndex, targetID) and playerIndex != opponent:
-            return 1000, None
-        elif noMove(current_board.getBoard, playersPos, playerIndex) and playerIndex == opponent:
-            return 80, None
+            return 1000, best_move
+        elif noMove(current_board.getBoard(), playersPos, playerIndex) and playerIndex == opponent:
+            #print(playersPos)
+            return 20, best_move
         elif depth == 0 and playerIndex != opponent:
             itemIndex = current_board.findItem(targetID)
-            return rules.distance(playersPos[playerIndex], itemIndex)
-        else: 
-            return - 10 * noMove(current_board.getBoard, playersPos, playerIndex, parameter="int")
+            if itemIndex != None:
+                return 200 - rules.distance(playersPos[playerIndex], itemIndex), best_move
+            else:
+                return 0, best_move
+        else:
+            return -5*noMove(current_board.getBoard(), playersPos, playerIndex, parameter="int"), best_move
     
     
     #if playerIndex != opponent:     
@@ -48,16 +61,26 @@ def minimax(board: list, tile: dict, playersPos: list[int], playerIndex:int, tar
         current_board.update(move["gate"])
         child_board, freeTile = current_board.getBoard(), current_board.getFreeTile()
         playersPos[playerIndex]=move["new_position"]
-        
-        score, _ = minimax(child_board, freeTile, playersPos, playerIndex%-2+1, targetID, opponent, depth-1)
-        
+        #print(f"SCORE: {score}; MOVE: {move}\n")
+        score, _ = minimax(child_board, freeTile, playersPos, playerIndex%-2+1, targetID, opponent, aiLevel, depth -1, alpha, beta)
+        #if playerIndex == 0:
+            #print(f"SCORE: {score}; MOVE: {move}\n")
         if score > best_score:
             best_score, best_move = score, move
-            
-        alpha = max(alpha, score)
-        if beta <= alpha:
-            break
+            print(score)
+        if playerIndex != opponent:
+            alpha = max(alpha, score)
+            if beta <= alpha:
+                #print('ok2')
+                break
+        else:
+            beta = min(beta, score)
+            if beta <= alpha:
+                #print('ok')
+                break
         current_board.undo()
+        if best_move is None:
+            best_move = randomMove(current_board.getBoard(), current_board.getFreeTile(), current_board.getPos(), playerIndex)
     return best_score, best_move
     
     # else:

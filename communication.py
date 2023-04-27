@@ -1,7 +1,7 @@
 import socket
 import json
 import random
-from ai import negamaxPruning
+from ai import minimax
 
 
 def runner_inscription(adresseIP, portClient, player, matricules, port: int = 3000):
@@ -45,6 +45,11 @@ def pong():
     pong = json.dumps(dictPong)
     return pong
 
+def opponent(current):
+    if current == 0:
+        return 1
+    else: 
+        return 0
 
 def moveResponse(state: dict, aiLevel: int):
     """This function generates the response dictionary for a move
@@ -61,16 +66,14 @@ def moveResponse(state: dict, aiLevel: int):
     """
     current = state["current"]
     # calling "thinking function" to generate the move
-    # tile, gate, new_pos = moveRandom(state)
-    move_dict = negamaxPruning(
-        state["board"], state["tile"], state["positions"], state["current"], state["target"], state["remaining"], aiLevel)[1]
-    # move_dict = {  # making the response's move dictionary
-    #     "tile": tile,
-    #     "gate": gate,
-    #     "new_position": new_pos
-    # }
-    print("---------------------------\nPLAYER {}: \nOLD POSITION: {}\nNEW POSITION: {}\n----------------------".format(
-        current, state["positions"][current], move_dict["new_position"]))
+    # move_dict = negamaxPruning(
+    #     state["board"], state["tile"], state["positions"], state["current"], state["target"], state["remaining"], aiLevel)[1]
+    
+    move_dict = minimax(state["board"], state["tile"], state["positions"], state["current"], state["target"], opponent(state['current']))[1]
+    
+    # print("---------------------------\nPLAYER {}: \nOLD POSITION: {}\nNEW POSITION: {}\n----------------------".format(
+    #     current, state["positions"][current], move_dict["new_position"]))
+    
     response_dict = {
         "response": "move",
         "move": move_dict,
@@ -80,7 +83,7 @@ def moveResponse(state: dict, aiLevel: int):
     return json.dumps(response_dict)
 
 
-def server(adresseIP, port, player, aiLevel, serv_timeout=1, client_timeout=0.2):
+def server(port, player, aiLevel, serv_timeout=1, client_timeout=0.2):
     """This function manages the communication between the AI and the server
 
     Parameters
