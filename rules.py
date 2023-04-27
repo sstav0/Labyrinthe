@@ -250,7 +250,7 @@ class Gates:
             if pos in columnList(gate) or move in columnList(gate):
                 pass
             else:
-                list.append(gate)
+                list.append(self.letter(gate))
         return list
     
 
