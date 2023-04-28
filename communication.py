@@ -66,7 +66,7 @@ def moveResponse(state):
     response_dict = {
         "response": "move",
         "move": move_dict,
-        "message": current
+        "message": "GO STOOPID"
     }
     return json.dumps(response_dict)   #converting the python dict to a json dict
 
