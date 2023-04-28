@@ -4,7 +4,7 @@ import rules
 import random
 
 class Minimax:
-    def __init__(self, board: list, tile: dict, playersPos: list[int], playerIndex:int, targetID: int, opponent:int, aiLevel:int=2, depth:int = 3, alpha= float("-inf"), beta=float("inf"), timeLimit: float=2.97):
+    def __init__(self, board: list, tile: dict, playersPos: list[int], playerIndex:int, targetID: int, opponent:int, aiLevel:int=2, depth:int =4, alpha= float("-inf"), beta=float("inf"), timeLimit: float=30):
         self.__board = board
         self.__tile = tile
         self.__playersPos = playersPos
@@ -32,10 +32,11 @@ class Minimax:
         
         value, move = self.minimax_(self.__board, self.__tile, self.__playersPos, self.__playerIndex, self.__aiLevel, self.__depth, self.__alpha, self.__beta)
         if move!= None:
+            print("EXECUTED IN: {}".format(time.time()-self.__start_time))
             return value, move
         else: 
-            print("BAD")
             random = randomMove(self.__initialBoard, self.__initialTile, self.__initialPos, self.__initialIndex)
+            print("RANDOM")
             print(random)
             return 0, random
     
@@ -45,7 +46,7 @@ class Minimax:
         best_score = float('-inf')
         #print(f"DEPTH: {depth}, PLAYERINDEX:{playerIndex}")
         
-        if depth == 0 or foundTreasure(current_board.getBoard(), playersPos, playerIndex, self.__targetID) or noMove(current_board.getBoard(), playersPos, self.__opponent):
+        if depth == 0 or foundTreasure(current_board.getBoard(), playersPos, playerIndex, self.__targetID):
             itemIndex = current_board.findItem(self.__targetID)
             if playerIndex != self.__opponent and itemIndex !=None:
                 return 1000-rules.distance(playersPos[playerIndex], itemIndex), None
@@ -53,7 +54,7 @@ class Minimax:
                 return 0, None
             else:
                 return -30*noMove(current_board.getBoard(), playersPos, playerIndex, parameter="int"), None
-          
+            
         for move in legalMoves(current_board):
             #print(f"MOVE: {move}")
             
@@ -63,28 +64,25 @@ class Minimax:
             
             score, _ = self.minimax_(child_board, freeTile, playersPos, opposite(playerIndex), aiLevel, depth-1, alpha, beta)
             # print(f"SCORE:{score}")
-            if score > best_score:
+            if score > best_score :
                 best_score, best_move = score, move
-                print(score, "MOVE: ",move["new_position"])
+                print(score, "MOVE: ",move["new_position"], "PLAYER: ", playerIndex)
             
+            #print(f"DEPTH: {depth}PLAYER: {playerIndex}")
             if playerIndex == self.__opponent:
                 alpha = max(alpha, score)
                 if beta <= alpha:
-                    #print("\nBREAK\n")
+                    #print(f"\n11BREAK=> ALPHA: {alpha} =>>>>>>> BETA:{beta}")
                     break
             else:
                 beta = min(beta, score)
                 if beta <= alpha:
-                    #print("\nBREAK\n")
+                    #print(f"\n22BREAK=> ALPHA: {alpha} =>>>>>>> BETA:{beta}")
                     break
                 
             if time.time()-self.__start_time > self.__timeLimit:
                 print("\nTIME!!!!!!!!!!!!!!!!!\n")
-                if best_move != None:
-                    return best_score, best_move
-                else:
-                    best_move = randomMove(self.__initialBoard, self.__initialTile, self.__initialPos, self.__initialIndex)
-                    return 0, best_move
+                return best_score, best_move
                 
             current_board.undo()
         return best_score, best_move
