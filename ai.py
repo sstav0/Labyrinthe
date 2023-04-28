@@ -70,16 +70,16 @@ class Minimax:
             if playerIndex == self.__opponent:
                 alpha = max(alpha, score)
                 if beta <= alpha:
-                    print("\nBREAK\n")
+                    #print("\nBREAK\n")
                     break
             else:
                 beta = min(beta, score)
                 if beta <= alpha:
-                    print("\nBREAK\n")
+                    #print("\nBREAK\n")
                     break
                 
             if time.time()-self.__start_time > self.__timeLimit:
-                print("TIME!!!!!!!!!!!!!!!!!")
+                print("\nTIME!!!!!!!!!!!!!!!!!\n")
                 if best_move != None:
                     return best_score, best_move
                 else:

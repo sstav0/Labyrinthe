@@ -117,7 +117,7 @@ class Board:
                 found = True
                 return i
         if not found:
-            print(f"ITEM {item} NOT FOUND")
+            print("ITEM {} NOT FOUND".format(chr(ord("A")+item)))
 
     def changeTile(self, free):
         self.__freeTile = free
