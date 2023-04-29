@@ -534,4 +534,5 @@ def distance(pos, item:int)->float:
     cartItem = cartesian(item)
     d1 = abs(cartPos[0]-cartItem[0])
     d2 = abs(cartPos[1]-cartItem[1])
-    return math.sqrt(d1**2+d2**2)
+    return d1+d2
+
