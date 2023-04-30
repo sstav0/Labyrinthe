@@ -28,10 +28,10 @@ class Board:
     allOutlines = [0, 1, 2, 3, 4, 5, 6, 7, 14, 21, 28, 35,
                    42, 43, 44, 45, 46, 47, 48, 41, 34, 27, 20, 13]
 
-    def __init__(self, board: list[dict], freeTile: dict, position: int) -> None:
+    def __init__(self, board: list[dict], freeTile: dict, positions: list) -> None:
         self.__board = board
         self.__freeTile = freeTile
-        self.__position = position
+        self.__positions = positions
         self.__oldBoard = []
         self.__oldPos = 0
         self.__oldFree = {}
@@ -45,9 +45,8 @@ class Board:
             letter of the gate
         """
         self.__oldBoard = self.__board.copy()
-        self.__oldPos = self.__position
+        self.__oldPos = self.__positions.copy()
         self.__oldFree = self.__freeTile.copy()
-
         new_column_row = []  # creating a list for the shifted tiles with the old free tile first
         prevFree = self.__freeTile  # saves the dictionary of the previous free tile
 
@@ -63,40 +62,41 @@ class Board:
         for i, index in zip(list(range(0, len(column_row_indexes), 1)), column_row_indexes):
             # Updating the original board with the shifted row/column
             self.__board[index] = new_column_row[i]
-
-        # checks if the position of the player is on the gate row/column in which the tile is inserted
-        if self.__position in column_row_indexes:
-            # checks if the position is not on the outlines of the board and then recalculates it
-            if self.__position not in self.allOutlines:
-                if gate in Gates().eastGates():
-                    self.__position = self.__position - 1
-                elif gate in Gates().westGates():
-                    self.__position = self.__position + 1
-                elif gate in Gates().northGates():
-                    self.__position = self.__position + 7
-                elif gate in Gates().southGates():
-                    self.__position = self.__position - 7
-            else:  # if the player is on the outlines of the board, he may be returned to the beginning of the row/column
-                if gate in Gates().eastGates():
-                    if self.__position in self.outlineWest:
-                        self.__position = self.__position + 6
-                    else:
-                        self.__position = self.__position - 1
-                elif gate in Gates().westGates():
-                    if self.__position in self.outlineEast:
-                        self.__position = self.__position - 6
-                    else:
-                        self.__position = self.__position + 1
-                elif gate in Gates().northGates():
-                    if self.__position in self.outlineSouth:
-                        self.__position = self.__position - 42
-                    else:
-                        self.__position = self.__position + 7
-                elif gate in Gates().southGates():
-                    if self.__position in self.outlineNorth:
-                        self.__position = self.__position + 42
-                    else:
-                        self.__position = self.__position - 7
+            
+        for i, position in enumerate(self.__positions):
+            # checks if the position of the player is on the gate row/column in which the tile is inserted
+            if position in column_row_indexes:
+                # checks if the position is not on the outlines of the board and then recalculates it
+                if position not in self.allOutlines:
+                    if gate in Gates().eastGates():
+                        self.__positions[i] = self.__positions[i] - 1
+                    elif gate in Gates().westGates():
+                        self.__positions[i] = self.__positions[i] + 1
+                    elif gate in Gates().northGates():
+                        self.__positions[i] = self.__positions[i] + 7
+                    elif gate in Gates().southGates():
+                        self.__positions[i] = self.__positions[i] - 7
+                else:  # if the player is on the outlines of the board, he may be returned to the beginning of the row/column
+                    if gate in Gates().eastGates():
+                        if position in self.outlineWest:
+                            self.__positions[i] = self.__positions[i] + 6
+                        else:
+                            self.__positions[i] = self.__positions[i] - 1
+                    elif gate in Gates().westGates():
+                        if position in self.outlineEast:
+                            self.__positions[i] = self.__positions[i] - 6
+                        else:
+                            self.__positions[i] = self.__positions[i] + 1
+                    elif gate in Gates().northGates():
+                        if position in self.outlineSouth:
+                            self.__positions[i] = self.__positions[i] - 42
+                        else:
+                            self.__positions[i] = self.__positions[i] + 7
+                    elif gate in Gates().southGates():
+                        if position in self.outlineNorth:
+                            self.__positions[i] = self.__positions[i] + 42
+                        else:
+                            self.__positions[i] = self.__positions[i] - 7
 
     def findItem(self, item: int):
         """This function returns the position of [item]
@@ -118,12 +118,13 @@ class Board:
                 return i
         if not found:
             print("ITEM {} NOT FOUND".format(chr(ord("A")+item)))
+            return None
 
     def changeTile(self, free):
         self.__freeTile = free
 
-    def getPos(self):
-        return self.__position
+    def getPos(self, index):
+        return self.__positions[index]
 
     def getFreeTile(self):
         return self.__freeTile
@@ -134,7 +135,7 @@ class Board:
     def undo(self):
         self.__board = self.__oldBoard
         self.__freeTile = self.__oldFree
-        self.__position = self.__oldPos
+        self.__positions = self.__oldPos
 
 class Gates:
     """This class gathers all the functions related to the gates' indexes/letters: 
@@ -459,7 +460,7 @@ def playerLegalMoves(initialPos: int, board: list) -> list[int]:
     return board_legalMoves
 
 
-def legalMoves(board: object) -> list[dict]:
+def legalMoves(board: object, index) -> list[dict]:
     """
     Finds all legal moves for a given player turn.
 
@@ -483,7 +484,7 @@ def legalMoves(board: object) -> list[dict]:
         board.changeTile(orientation)
         for gate in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]:
             board.update(gate)
-            for playerMove in playerLegalMoves(board.getPos(), board.getBoard()):
+            for playerMove in playerLegalMoves(board.getPos(index), board.getBoard()):
                 # TODO Wait to see if there is a need to exclude the opposite gate of the one being played previously
                 legal_moves.append({
                     "tile": orientation,
@@ -515,7 +516,7 @@ def cartesian(target:int)->tuple:
             y = i 
     return(x, y)
 
-def distance(pos, item:int)->float:
+def distance(pos:int, item:int)->float:
     """This function calculates the distance between the player's position and the item he has to find
 
     Parameters

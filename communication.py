@@ -1,7 +1,7 @@
 import socket
 import json
 import random
-from ai import Minimax
+from ai import makeMove
 
 
 def runner_inscription(adresseIP, portClient, player, matricules, port: int = 3000):
@@ -12,7 +12,6 @@ def runner_inscription(adresseIP, portClient, player, matricules, port: int = 30
     port : int, optional
         _description_, by default 3000
     """
-
     inscription_info: dict = {
         "request": "subscribe",
         "port": portClient,
@@ -66,7 +65,7 @@ def moveResponse(state: dict, aiLevel: int):
     """
     current = state["current"]
     
-    move_dict = Minimax(state["board"], state["tile"], state["positions"], state["current"], state["target"], state["current"]%-2+1).runMinimax()[1]
+    move_dict = makeMove(state["tile"], state["positions"], state["current"], state["target"], state["board"])
     
     # print("---------------------------\nPLAYER {}: \nOLD POSITION: {}\nNEW POSITION: {}\n----------------------".format(
     #     current, state["positions"][current], move_dict["new_position"]))

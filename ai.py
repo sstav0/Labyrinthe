@@ -1,95 +1,8 @@
 import time
-from rules import Board, foundTreasure, legalMoves, Gates
+from rules import Board, Gates
 import rules
 import random
-
-class Minimax:
-    def __init__(self, board: list, tile: dict, playersPos: list[int], playerIndex:int, targetID: int, opponent:int, aiLevel:int=2, depth:int =4, alpha= float("-inf"), beta=float("inf"), timeLimit: float=30):
-        self.__board = board
-        self.__tile = tile
-        self.__playersPos = playersPos
-        self.__playerIndex = playerIndex
-        self.__targetID = targetID
-        self.__opponent = opponent
-        self.__aiLevel = aiLevel
-        self.__depth = depth
-        self.__alpha = alpha
-        self.__beta = beta
-        self.__timeLimit = timeLimit
-        self.__start_time = 0
-        
-        self.__initialBoard = []
-        self.__initialPos = []
-        self.__initialIndex = 0
-        self.__initialTile = {}
-    
-    def runMinimax(self):
-        self.__start_time = time.time()
-        self.__initialBoard = self.__board.copy()
-        self.__initialPos = self.__playersPos.copy()
-        self.__initialIndex = self.__playerIndex
-        self.__initialTile = self.__tile
-        
-        value, move = self.minimax_(self.__board, self.__tile, self.__playersPos, self.__playerIndex, self.__aiLevel, self.__depth, self.__alpha, self.__beta)
-        if move!= None:
-            print("EXECUTED IN: {}".format(time.time()-self.__start_time))
-            return value, move
-        else: 
-            random = randomMove(self.__initialBoard, self.__initialTile, self.__initialPos, self.__initialIndex)
-            print("RANDOM")
-            print(random)
-            return 0, random
-    
-    def minimax_(self, childBoard, childTile, playersPos, playerIndex, aiLevel, depth, alpha, beta)->tuple:
-        
-        current_board = Board(childBoard,  childTile, playersPos[playerIndex])
-        best_score = float('-inf')
-        #print(f"DEPTH: {depth}, PLAYERINDEX:{playerIndex}")
-        
-        if depth == 0 or foundTreasure(current_board.getBoard(), playersPos, playerIndex, self.__targetID):
-            itemIndex = current_board.findItem(self.__targetID)
-            if playerIndex != self.__opponent and itemIndex !=None:
-                return 1000-rules.distance(playersPos[playerIndex], itemIndex), None
-            elif playerIndex != self.__opponent:
-                return 0, None
-            else:
-                return -30*noMove(current_board.getBoard(), playersPos, playerIndex, parameter="int"), None
             
-        for move in legalMoves(current_board):
-            #print(f"MOVE: {move}")
-            
-            current_board.update(move["gate"])
-            child_board, freeTile = current_board.getBoard(), current_board.getFreeTile()
-            playersPos[playerIndex]=move["new_position"]
-            
-            score, _ = self.minimax_(child_board, freeTile, playersPos, opposite(playerIndex), aiLevel, depth-1, alpha, beta)
-            # print(f"SCORE:{score}")
-            if score > best_score :
-                best_score, best_move = score, move
-                print(score, "MOVE: ",move["new_position"], "PLAYER: ", playerIndex)
-            
-            #print(f"DEPTH: {depth}PLAYER: {playerIndex}")
-            if playerIndex == self.__opponent:
-                alpha = max(alpha, score)
-                if beta <= alpha:
-                    #print(f"\n11BREAK=> ALPHA: {alpha} =>>>>>>> BETA:{beta}")
-                    break
-            else:
-                beta = min(beta, score)
-                if beta <= alpha:
-                    #print(f"\n22BREAK=> ALPHA: {alpha} =>>>>>>> BETA:{beta}")
-                    break
-                
-            if time.time()-self.__start_time > self.__timeLimit:
-                print("\nTIME!!!!!!!!!!!!!!!!!\n")
-                return best_score, best_move
-                
-            current_board.undo()
-        return best_score, best_move
-            
-        
-def opposite(playerIndex):
-    return playerIndex%-2+1
 
 
 def timeit(func):
@@ -97,18 +10,10 @@ def timeit(func):
         start_time = time.time()
         result = func(*args, **kwargs)
         end_time = time.time()
-        print(f"Execution time: {end_time - start_time:.2f} seconds")
+        print(f"\n-----------Execution time: {end_time - start_time:.2f} seconds--------\n")
         return result
     return wrapper
 
-def noMove(board, playersPos, playerIndex, parameter ="bool"):
-    if parameter =="bool":
-        if len(rules.playerLegalMoves(playersPos[playerIndex], board)) == 1:
-            return True
-        else: 
-            return False
-    else:
-        return len(rules.playerLegalMoves(playersPos[playerIndex], board))
     
 
 def randomMove(board, tile, playersPos, playerIndex):
@@ -120,6 +25,22 @@ def randomMove(board, tile, playersPos, playerIndex):
     return {"gate": gate, "tile": tile, "new_position": move}
 
 #####################################################################################################
+def saveMessage(player_number, message1, message2=None):
+    """This functions saves any message (dictionary) in a .txt file 
+
+    Parameters
+    ----------
+        player_number (int): number of the player (0 or 1)
+        message (dict): message that's going to be saved in the .txt file
+    """
+    if message2 != None:
+        with open('errors.txt', 'a') as file:
+            file.write('LIST OF ERRORS PLAYER {}: {}\n{}\n'.format(
+                player_number, message1, message2))
+    else:
+        with open('errors.txt', 'a') as file:
+            file.write('LIST OF ERRORS PLAYER {}: {}\n'.format(
+                player_number, message1))
 
 def findItem(board:list, item: int):
     """This function returns the position of [item]
@@ -143,22 +64,17 @@ def findItem(board:list, item: int):
         print("ITEM {} NOT FOUND".format(chr(ord("A")+item)))
 
 def h(initPos, target):
-    if rules.distance(initPos, target)==0:
-        return 1000
-    elif rules.distance(initPos, target) <= 2:
-        return 500-10*rules.distance(initPos, target)
-    else: 
-        return 300-10*rules.distance(initPos, target)
+    return rules.distance(initPos, target)
     
 
 def boardMap(board):
     map_ = {}
     for i, tile in enumerate(board): 
-        map_[i] = -100000
+        map_[i] = 100000
     return map_
 
 def bestNode(openSet, target):
-    bestScore = float("-inf")
+    bestScore = float('-inf')
     bestElem = None
     for elem in openSet:
         fScore = h(elem, target)
@@ -205,8 +121,7 @@ def playerLegalMoves(initialPos: int, board: list) -> list[int]:
             pass
     return board_legalMoves
 
-def A_star(initPos, target, board):
-    targetPos = findItem(board, target)
+def A_star(initPos, targetPos, board):
     openSet = [initPos]
     
     cameFrom = {}
@@ -220,25 +135,73 @@ def A_star(initPos, target, board):
     while openSet != []:
         
         current = bestNode(openSet, targetPos)
-        print(current)
-        time.sleep(1)
         if current == targetPos:
             return reconstructPath(cameFrom, current)
         if playerLegalMoves(current, board) != []:
-            
+            openSet.remove(current)
             for neighbor in (playerLegalMoves(current, board)):
-                tentativeScore = gScore[current]+rules.distance(initPos, neighbor)
+                #print(f"\nPOS: {current}; LEGAL MOVES:{playerLegalMoves(current, board)}; OPENSET: {openSet}\n")
+                #time.sleep(1)
+                tentativeScore = gScore[current]+rules.distance(current, neighbor)
+                
+                #origin = gScore[current]
+                #oldG = gScore[neighbor]
+                
                 if tentativeScore < gScore[neighbor]:
                     cameFrom[neighbor]=current
                     gScore[neighbor]=tentativeScore
                     fScore[neighbor]=tentativeScore+ h(neighbor, targetPos)
                     if neighbor not in openSet:
                         openSet.append(neighbor)
-                print(f"NEIGHBOR: {neighbor}; TENTATIVE: {tentativeScore};GSCORE: {gScore[neighbor]}; OPENSET:{openSet}")
-                time.sleep(2)
+                #print(f"CURRENT: {current}; NEIGHBOR: {neighbor}; ORIGIN G: {origin}; OLDG: {oldG}; TENTATIVE: {tentativeScore}; GSCORE: {gScore[neighbor]}; OPENSET:{openSet}; CAMEFROM: {cameFrom}")
+                #time.sleep(3)
                 
         else: 
             return "CAN'T MOVE"
     
-    return 'PATH NOT FOUND'
+    return reconstructPath(cameFrom, current)
+
             
+@timeit            
+def makeMove(tile, positions, current, target, board): 
+    
+    # initPos = positions[current]
+    # opPos = positions[current%-2+1]
+    move_dict = {}
+    bestScore = float("+inf")
+    bestMove = None
+    bestGate = ""
+    BoardObject = Board(board, tile, positions)
+    
+    for orientation in rules.orientations(BoardObject.getFreeTile()):
+        BoardObject.changeTile(orientation)
+        for gate in Gates().allLetters():
+            BoardObject.update(gate)
+            itemPos = BoardObject.findItem(target)
+            if itemPos != None:
+                #print(f"TILE:{orientation}; GATE:{gate}")
+                move = A_star(BoardObject.getPos(current), itemPos, BoardObject.getBoard())
+                if type(move[-1])==int:
+                    score = rules.distance(move[-1], itemPos)*10+len(playerLegalMoves(BoardObject.getPos(current%-2+1), BoardObject.getBoard()))
+            else:
+                score = len(playerLegalMoves(BoardObject.getPos(current%-2+1), BoardObject.getBoard()))
+                #print(f"NO OBJECT; SCORE: {score}")
+                move = [BoardObject.getPos(current)]
+            if score < bestScore:
+  
+                bestMove = move 
+                bestScore = score
+                bestGate = gate
+                bestTile = orientation 
+                #print(f"\nBESTMOVE: {bestMove}\n")  
+            BoardObject.undo()
+    
+    
+    move_dict = {
+        "tile": bestTile,
+        "gate": bestGate,
+        "new_position": bestMove[-1]
+    }
+    return move_dict
+
+        
