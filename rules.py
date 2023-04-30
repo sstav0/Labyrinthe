@@ -1,7 +1,5 @@
-import random
-import game_board
-import math 
 import copy
+from typing import Union
 
 class Board:
     """This class gathers all functions related to the management of the board: 
@@ -12,7 +10,7 @@ class Board:
 
         "getPos"
         ---
-        Allows to retrieve the position of the player on the board
+        Allows to retrieve the positions of the players on the board
 
         "getFreeTile"
         ---
@@ -21,6 +19,10 @@ class Board:
         "getBoard"
         ---
         Allows to retrieve the dictionary of the board
+        
+        "undo"
+        ---
+        Cancels the previous update on the board
     """
     outlineNorth = [0, 1, 2, 3, 4, 5, 6]
     outlineEast = [6, 13, 20, 27, 34, 41, 48]
@@ -37,7 +39,7 @@ class Board:
         self.__oldPos = 0
         self.__oldFree = {}
 
-    def update(self, gate):
+    def update(self, gate:str)->None:
         """This function updates the board after sliding the tile in a gate
 
         Parameters
@@ -99,7 +101,7 @@ class Board:
                         else:
                             self.__positions[i] = self.__positions[i] - 7
 
-    def findItem(self, item: int):
+    def findItem(self, item: int)->Union[int, None]:
         """This function returns the position of [item]
 
         Parameters
@@ -121,19 +123,19 @@ class Board:
             print("ITEM {} NOT FOUND".format(chr(ord("A")+item)))
             return None
 
-    def changeTile(self, free):
+    def changeTile(self, free:dict)->None:
         self.__freeTile = free
 
-    def getPos(self, index):
+    def getPos(self, index:int)->int:
         return self.__positions[index]
 
-    def getFreeTile(self):
+    def getFreeTile(self)->dict:
         return self.__freeTile
 
-    def getBoard(self):
+    def getBoard(self)->list:
         return self.__board
 
-    def undo(self):
+    def undo(self)->None:
         self.__board = self.__oldBoard
         self.__freeTile = self.__oldFree
         self.__positions = self.__oldPos
@@ -204,49 +206,63 @@ class Gates:
             35: "J", 21: "K", 7: "L"
         }
 
-    def index(self, letter: str):
+    def index(self, letter: str)->int:
         return self.__gate_to_index[letter]
 
-    def allIndexes(self):
+    def allIndexes(self)->list[int]:
         return [1, 3, 5, 13, 27, 41, 47, 45, 43, 35, 21, 7]
 
-    def rowIndexes(self):
+    def rowIndexes(self)->list[int]:
         """
         Output indexes correspond to `["D", "E", "F", "J", "K", "L"]`
         """
         return [13, 27, 41, 35, 21, 7]
 
-    def columnIndexes(self):
+    def columnIndexes(self)->list[int]:
         """
         Output indexes correspond to `["A", "B", "C", "G", "H", "I"]`
         """
         return [1, 3, 5, 47, 45, 43]
 
-    def letter(self, index: int):
+    def letter(self, index: int)->str:
         return self.__index_to_gate[index]
 
-    def eastGates(self):
+    def eastGates(self)->list[str]:
         return ["D", "E", "F"]
 
-    def westGates(self):
+    def westGates(self)->list[str]:
         return ["L", "K", "J"]
 
-    def northGates(self):
+    def northGates(self)->list[str]:
         return ["A", "B", "C"]
 
-    def southGates(self):
+    def southGates(self)->list[str]:
         return ["I", "H", "G"]
 
-    def allLetters(self):
+    def allLetters(self)->list[str]:
         return ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]
 
-    def rowLetters(self):
+    def rowLetters(self)->list[str]:
         return ["D", "E", "F", "J", "K", "L"]
 
-    def columnLetters(self):
+    def columnLetters(self)->list[str]:
         return ["A", "B", "C", "G", "H", "I"]
     
     def exceptGate(self, pos, move):
+        """This function takes the gate that is on the same row/column of the position and next position(move) passed in parameter
+
+        Parameters
+        ----------
+        pos : int
+            position 
+        move : _type_
+            next position
+
+        Returns
+        -------
+        list
+            list of the gate letters that are not on the same column/row of the position and next position
+        """
         list = []
         for gate in Gates().allIndexes():
             if pos in columnList(gate) or move in columnList(gate):
@@ -256,62 +272,7 @@ class Gates:
         return list
     
 
-
-def findTarget(list: list, target):
-    """This functions searches for a target in a list and returns its index if found 
-
-    Parameters
-    ----------
-    list : list
-        list in which the target may be 
-    target : unknown 
-        the element to search for
-
-    Returns
-    -------
-    str 
-        error message 'TARGET NOT FOUND'
-
-    OR
-
-    unknown 
-        the target
-    """
-    found = False
-    i = 0
-    for elem in list:
-        if elem == target:
-            found = True
-            return i
-        i += 1
-    if not found:
-        return 'TARGET NOT FOUND'
-
-
-def foundTreasure(board: list, playersPos: list[int], playerIndex: int, targetId: int) ->bool:
-    """
-    Determines if the tile at the position of the player contains a treasure.
-
-    Parameters
-    ----------
-    board : list
-        Actual state of the board.
-    playersPos : list[int]
-        List containing the index of the tile at the position of each player.
-    playerIndex : int
-        Index of the current player needed to pick the right index from `playerPos`.
-    targetId : int
-        Contains the ID of the treasure to reach (to not be confused with the index of the tile).
-
-    Returns
-    -------
-    bool
-        Returns `True` if the treasure is found (on the current player location), `False` otherwise.
-    """
-    return board[playersPos[playerIndex]]["item"] == targetId
-
-
-def nextIndex(initialPos: int, direction: str):
+def nextIndex(initialPos: int, direction: str)->int:
     """Returns the index of the next tile a chosen direction
 
     Parameters
@@ -459,41 +420,6 @@ def playerLegalMoves(initialPos: int, board: list) -> list[int]:
         else:
             pass
     return board_legalMoves
-
-
-def legalMoves(board: object, index) -> list[dict]:
-    """
-    Finds all legal moves for a given player turn.
-
-    Parameters
-    ----------
-    board : object
-        Current board class containing tile's dictionaries.
-
-    Returns
-    -------
-    list[dict]
-        All possible moves containing the free tile, gate, and new player position.
-    """
-    if not isinstance(board, Board):
-        raise TypeError("Board must be an instance of Board class")
-
-    legal_moves = []
-    # gates = Gates()
-    # all_gates = gates.allLetters()
-    for orientation in orientations(board.getFreeTile()):
-        board.changeTile(orientation)
-        for gate in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]:
-            board.update(gate)
-            for playerMove in playerLegalMoves(board.getPos(index), board.getBoard()):
-                # TODO Wait to see if there is a need to exclude the opposite gate of the one being played previously
-                legal_moves.append({
-                    "tile": orientation,
-                    "gate": gate,
-                    "new_position": playerMove
-                })
-            board.undo()
-    return legal_moves
 
 def cartesian(target:int)->tuple:
     """This function returns the cartesian coordinates of a tile on the board

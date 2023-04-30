@@ -4,7 +4,7 @@ import random
 from ai import makeMove
 
 
-def runner_inscription(adresseIP, portClient, player, matricules, port: int = 3000):
+def runner_inscription(adresseIP, portClient, player, matricules, port: int = 3000)->None:
     """function that makes the inscription to the game server 
 
     Parameters
@@ -30,7 +30,7 @@ def runner_inscription(adresseIP, portClient, player, matricules, port: int = 30
         print(f"Received : {ok}")
 
 
-def pong():
+def pong()->json:
     """function that makes the json dictionary response to the "ping" request
 
     Returns
@@ -44,13 +44,8 @@ def pong():
     pong = json.dumps(dictPong)
     return pong
 
-def opponent(current):
-    if current == 0:
-        return 1
-    else: 
-        return 0
 
-def moveResponse(state: dict, aiLevel: int):
+def moveResponse(state: dict)->json:
     """This function generates the response dictionary for a move
 
     Parameters
@@ -70,16 +65,24 @@ def moveResponse(state: dict, aiLevel: int):
     # print("---------------------------\nPLAYER {}: \nOLD POSITION: {}\nNEW POSITION: {}\n----------------------".format(
     #     current, state["positions"][current], move_dict["new_position"]))
     
-    response_dict = {
-        "response": "move",
-        "move": move_dict,
-        "message": current
-    }
+    if current == 0:
+        response_dict = {
+            "response": "move",
+            "move": move_dict,
+            "message": "I'M YELLOW"
+        }
+    else: 
+        response_dict = {
+            "response": "move",
+            "move": move_dict,
+            "message": "I'M BLUE"
+        }
+        
     # converting the python dict to a json dict
     return json.dumps(response_dict)
 
 
-def server(port, player, aiLevel, serv_timeout=1, client_timeout=0.2):
+def server(port, player, serv_timeout=1, client_timeout=0.2)->None:
     """This function manages the communication between the AI and the server
 
     Parameters
@@ -114,24 +117,24 @@ def server(port, player, aiLevel, serv_timeout=1, client_timeout=0.2):
                     if msg != "":
                         data = json.loads(msg)
                         if data["request"] == 'play':
-                            print(data["request"])
-                            response = moveResponse(
-                                data["state"], aiLevel).encode()
+                            print("\nREQUEST: {}".format(data["request"]))
+                            response = moveResponse(data["state"]).encode()
+                            
                             if data["errors"] != []:  # if there is an error
-                                saveMessage(player, data["errors"], "position:{}".format(
-                                    data["state"]["positions"][data["state"]["current"]]))  # saving the error in a .txt file
+                                saveMessage(player, data["errors"], "position:{}".format(data["state"]["positions"][data["state"]["current"]]))  # saving the error in a .txt file
+                            
                             sendMessage(client, response)
                             data["request"] = ""
                         elif data["request"] == 'ping':
-                            print(data["request"])
+                            print("\nREQUEST: {}".format(data["request"]))
                             client.sendall(pong().encode())
-                            print("pong")
+                            print("\npong")
                             data["request"] = ""
             except socket.timeout:
                 pass
 
 
-def saveMessage(player_number, message1, message2=None):
+def saveMessage(player_number, message1, message2=None)->None:
     """This functions saves any message (dictionary) in a .txt file 
 
     Parameters
@@ -149,7 +152,7 @@ def saveMessage(player_number, message1, message2=None):
                 player_number, message1))
 
 
-def sendMessage(socket, message):
+def sendMessage(socket:socket, message:json)->None:
     """This functions sends a message on a socket 
 
     Parameters
@@ -165,7 +168,7 @@ def sendMessage(socket, message):
         totalSent += sent
 
 
-def receiveMessage(socket):
+def receiveMessage(socket:socket)->json:
     """This function receives a message sent on a socket
 
     Parameters
@@ -188,7 +191,7 @@ def receiveMessage(socket):
     return msg
 
 
-def get_free_ports(num_ports):
+def get_free_ports(num_ports:int)->list:
     """Returns a list of `num_ports` available ports on localhost.
 
     Parameters
@@ -212,7 +215,7 @@ def get_free_ports(num_ports):
     return ports
 
 
-def randomMatricule(quantity, parameter=4000):
+def randomMatricule(quantity:int, parameter:int=2000)->list[int]:
     """This function returns a list of a certain amount of random matricules among 4000 matricules(by default)
 
     Parameters
@@ -226,14 +229,14 @@ def randomMatricule(quantity, parameter=4000):
         list of the random matricules
     """
     list = []
-    matricules = matriculeGenerator(4000)
+    matricules = matriculeGenerator(parameter)
     for i in range(quantity):
         i = matricules[random.randint(0, len(matricules))]
         list.append(i)
     return list
 
 
-def matriculeGenerator(number):
+def matriculeGenerator(number:int)->list[int]:
     """This function generates a certain number of different matricules with 5 digits
 
     Parameters
