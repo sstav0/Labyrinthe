@@ -48,10 +48,9 @@ if __name__ == "__main__":
     print(showBoard(state["board"]), "\n\n\n")
     BoardObject2 = Board(state["board"], state["tile"], state["positions"])
     
+    print(move)
     
-    #print(move)
-    
-    BoardObject2.changeTile({'N': True, 'E': False, 'S': True, 'W': False, 'item': None})
-    BoardObject2.update("A")
+    BoardObject2.changeTile(move["tile"])
+    BoardObject2.update(move["gate"])
     print(showBoard(BoardObject2.getBoard())) 
     print(BoardObject2.getPos(1))

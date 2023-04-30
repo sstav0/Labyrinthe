@@ -172,6 +172,7 @@ def makeMove(tile, positions, current, target, board):
     bestMove = None
     bestGate = ""
     BoardObject = Board(board, tile, positions)
+    previousItem = None
     
     for orientation in rules.orientations(BoardObject.getFreeTile()):
         BoardObject.changeTile(orientation)
@@ -179,24 +180,33 @@ def makeMove(tile, positions, current, target, board):
             BoardObject.update(gate)
             itemPos = BoardObject.findItem(target)
             if itemPos != None:
+                previousItem = itemPos
                 #print(f"TILE:{orientation}; GATE:{gate}")
                 move = A_star(BoardObject.getPos(current), itemPos, BoardObject.getBoard())
                 if type(move[-1])==int:
                     score = rules.distance(move[-1], itemPos)*10+len(playerLegalMoves(BoardObject.getPos(current%-2+1), BoardObject.getBoard()))
+                else:
+                    move = [BoardObject.getPos(current)]
+                    if previousItem != None:
+                        score = rules.distance(positions[current], previousItem)+len(playerLegalMoves(BoardObject.getPos(current%-2+1), BoardObject.getBoard()))
+                    else:
+                        score = 100
             else:
-                score = len(playerLegalMoves(BoardObject.getPos(current%-2+1), BoardObject.getBoard()))
+                if previousItem != None:
+                    score = rules.distance(positions[current], previousItem)+len(playerLegalMoves(BoardObject.getPos(current%-2+1), BoardObject.getBoard()))
+                else: 
+                    score = 100
                 #print(f"NO OBJECT; SCORE: {score}")
                 move = [BoardObject.getPos(current)]
             if score < bestScore:
-  
                 bestMove = move 
                 bestScore = score
                 bestGate = gate
                 bestTile = orientation 
-                #print(f"\nBESTMOVE: {bestMove}\n")  
+                
             BoardObject.undo()
     
-    
+    print(f"\nBESTMOVE: {bestMove}\n")  
     move_dict = {
         "tile": bestTile,
         "gate": bestGate,

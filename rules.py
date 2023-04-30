@@ -1,6 +1,7 @@
 import random
 import game_board
 import math 
+import copy
 
 class Board:
     """This class gathers all functions related to the management of the board: 
@@ -29,9 +30,9 @@ class Board:
                    42, 43, 44, 45, 46, 47, 48, 41, 34, 27, 20, 13]
 
     def __init__(self, board: list[dict], freeTile: dict, positions: list) -> None:
-        self.__board = board
-        self.__freeTile = freeTile
-        self.__positions = positions
+        self.__board = copy.deepcopy(board)
+        self.__freeTile = copy.deepcopy(freeTile)
+        self.__positions = copy.deepcopy(positions)
         self.__oldBoard = []
         self.__oldPos = 0
         self.__oldFree = {}
@@ -44,9 +45,9 @@ class Board:
         gate : str      
             letter of the gate
         """
-        self.__oldBoard = self.__board.copy()
-        self.__oldPos = self.__positions.copy()
-        self.__oldFree = self.__freeTile.copy()
+        self.__oldBoard = copy.deepcopy(self.__board)
+        self.__oldPos = copy.deepcopy(self.__positions)
+        self.__oldFree = copy.deepcopy(self.__freeTile)
         new_column_row = []  # creating a list for the shifted tiles with the old free tile first
         prevFree = self.__freeTile  # saves the dictionary of the previous free tile
 
