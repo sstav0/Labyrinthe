@@ -150,10 +150,10 @@ def A_star(initPos:int, targetPos:int, board:list)->Union[list[int], str]:
     
     cameFrom = {}#for each new position, the value is the previous position. Example {1:0} means you went from 0 to 1
     
-    gScore = boardMap(board)    #initalize the score map: for each tile, boardMap sets the value to 'inf'
-    gScore[initPos]= 0  #the socre of the inital position 
+    gScore = boardMap(board)    #initialize the score map: for each tile, boardMap sets the value to 'inf'
+    gScore[initPos]= 0  #the score of the initial position 
     
-    fScore = boardMap(board)    #intialize the score map: for each tile, boardMap sets the value to 'inf'
+    fScore = boardMap(board)    #initialize the score map: for each tile, boardMap sets the value to 'inf'
     fScore[initPos]= h(initPos, targetPos)  #the score of the initial position is the distance between the position and the target
     
     while openSet != []:
@@ -181,7 +181,7 @@ def A_star(initPos:int, targetPos:int, board:list)->Union[list[int], str]:
             
 @timeit            
 def makeMove(tile:dict, positions:list, current:int, target:int, board:list)->dict: 
-    """This function handles the calls of the function algorithm and assigns a score to each move possiblre
+    """This function handles the calls of the function algorithm and assigns a score to each move possible
 
     Parameters
     ----------
@@ -231,9 +231,9 @@ def makeMove(tile:dict, positions:list, current:int, target:int, board:list)->di
             BoardObject.undo()
     
     if current == 0: 
-        print(f"\nYELLOW  =>  BESTMOVE: {bestMove}\n")  
+        print(f"\nYELLOW  =>  BEST MOVE: {bestMove}\n")  
     else:
-        print(f"\nBLUE  =>  BESTMOVE: {bestMove}\n")  
+        print(f"\nBLUE  =>  BEST MOVE: {bestMove}\n")  
         
     time.sleep(1.5)
     move_dict = {
