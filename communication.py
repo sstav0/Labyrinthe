@@ -4,7 +4,7 @@ import random
 from ai import makeMove
 
 
-def runner_inscription(adresseIP, portClient, player, matricules, port: int = 3000)->None:
+def runner_inscription(adresseIP, portClient, player, matricules, port: int = 3000) -> None:
     """function that makes the inscription to the game server 
 
     Parameters
@@ -30,7 +30,7 @@ def runner_inscription(adresseIP, portClient, player, matricules, port: int = 30
         print(f"Received : {ok}")
 
 
-def pong()->json:
+def pong() -> str:
     """function that makes the json dictionary response to the "ping" request
 
     Returns
@@ -45,7 +45,7 @@ def pong()->json:
     return pong
 
 
-def moveResponse(state: dict)->json:
+def moveResponse(state: dict) -> str:
     """This function generates the response dictionary for a move
 
     Parameters
@@ -59,30 +59,31 @@ def moveResponse(state: dict)->json:
         json dictionary for the move response
     """
     current = state["current"]
-    
-    move_dict = makeMove(state["tile"], state["positions"], state["current"], state["target"], state["board"])
-    
+
+    move_dict = makeMove(state["tile"], state["positions"],
+                         state["current"], state["target"], state["board"])
+
     # print("---------------------------\nPLAYER {}: \nOLD POSITION: {}\nNEW POSITION: {}\n----------------------".format(
     #     current, state["positions"][current], move_dict["new_position"]))
-    
+
     if current == 0:
         response_dict = {
             "response": "move",
             "move": move_dict,
             "message": "I'M YELLOW"
         }
-    else: 
+    else:
         response_dict = {
             "response": "move",
             "move": move_dict,
             "message": "I'M BLUE"
         }
-        
+
     # converting the python dict to a json dict
     return json.dumps(response_dict)
 
 
-def server(port, player, serv_timeout=1, client_timeout=0.2)->None:
+def server(port, player, serv_timeout=1, client_timeout=0.2) -> None:
     """This function manages the communication between the AI and the server
 
     Parameters
@@ -119,10 +120,11 @@ def server(port, player, serv_timeout=1, client_timeout=0.2)->None:
                         if data["request"] == 'play':
                             print("\nREQUEST: {}".format(data["request"]))
                             response = moveResponse(data["state"]).encode()
-                            
+
                             if data["errors"] != []:  # if there is an error
-                                saveMessage(player, data["errors"], "position:{}".format(data["state"]["positions"][data["state"]["current"]]))  # saving the error in a .txt file
-                            
+                                saveMessage(player, data["errors"], "position:{}".format(
+                                    data["state"]["positions"][data["state"]["current"]]))  # saving the error in a .txt file
+
                             sendMessage(client, response)
                             data["request"] = ""
                         elif data["request"] == 'ping':
@@ -134,7 +136,7 @@ def server(port, player, serv_timeout=1, client_timeout=0.2)->None:
                 pass
 
 
-def saveMessage(player_number, message1, message2=None)->None:
+def saveMessage(player_number, message1, message2=None) -> None:
     """This functions saves any message (dictionary) in a .txt file 
 
     Parameters
@@ -152,7 +154,7 @@ def saveMessage(player_number, message1, message2=None)->None:
                 player_number, message1))
 
 
-def sendMessage(socket:socket, message:json)->None:
+def sendMessage(socket, message: bytes) -> None:
     """This functions sends a message on a socket 
 
     Parameters
@@ -168,7 +170,7 @@ def sendMessage(socket:socket, message:json)->None:
         totalSent += sent
 
 
-def receiveMessage(socket:socket)->json:
+def receiveMessage(socket) -> str:
     """This function receives a message sent on a socket
 
     Parameters
@@ -191,7 +193,7 @@ def receiveMessage(socket:socket)->json:
     return msg
 
 
-def get_free_ports(num_ports:int)->list:
+def get_free_ports(num_ports: int) -> list:
     """Returns a list of `num_ports` available ports on localhost.
 
     Parameters
@@ -215,7 +217,7 @@ def get_free_ports(num_ports:int)->list:
     return ports
 
 
-def randomMatricule(quantity:int, parameter:int=2000)->list[int]:
+def randomMatricule(quantity: int, parameter: int = 2000) -> list[int]:
     """This function returns a list of a certain amount of random matricules among 4000 matricules(by default)
 
     Parameters
@@ -236,7 +238,7 @@ def randomMatricule(quantity:int, parameter:int=2000)->list[int]:
     return list
 
 
-def matriculeGenerator(number:int)->list[int]:
+def matriculeGenerator(number: int) -> list[int]:
     """This function generates a certain number of different matricules with 5 digits
 
     Parameters

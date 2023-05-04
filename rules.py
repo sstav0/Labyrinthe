@@ -1,6 +1,7 @@
 import copy
 from typing import Union
 
+
 class Board:
     """This class gathers all functions related to the management of the board: 
 
@@ -19,7 +20,7 @@ class Board:
         "getBoard"
         ---
         Allows to retrieve the dictionary of the board
-        
+
         "undo"
         ---
         Cancels the previous update on the board
@@ -36,10 +37,10 @@ class Board:
         self.__freeTile = copy.deepcopy(freeTile)
         self.__positions = copy.deepcopy(positions)
         self.__oldBoard = []
-        self.__oldPos = 0
+        self.__oldPos = []
         self.__oldFree = {}
 
-    def update(self, gate:str)->None:
+    def update(self, gate: str) -> None:
         """This function updates the board after sliding the tile in a gate
 
         Parameters
@@ -62,10 +63,10 @@ class Board:
         # Insert the free tile at the start of the column/row
         new_column_row.insert(0, prevFree)
 
-        for i, index in zip(list(range(0, len(column_row_indexes), 1)), column_row_indexes):
+        for i, index in zip(list(range(0, len(column_row_indexes))), column_row_indexes):
             # Updating the original board with the shifted row/column
             self.__board[index] = new_column_row[i]
-            
+
         for i, position in enumerate(self.__positions):
             # checks if the position of the player is on the gate row/column in which the tile is inserted
             if position in column_row_indexes:
@@ -101,7 +102,7 @@ class Board:
                         else:
                             self.__positions[i] = self.__positions[i] - 7
 
-    def findItem(self, item: int)->Union[int, None]:
+    def findItem(self, item: int) -> Union[int, None]:
         """This function returns the position of [item]
 
         Parameters
@@ -123,22 +124,23 @@ class Board:
             print("ITEM {} NOT FOUND".format(chr(ord("A")+item)))
             return None
 
-    def changeTile(self, free:dict)->None:
+    def changeTile(self, free: dict) -> None:
         self.__freeTile = free
 
-    def getPos(self, index:int)->int:
+    def getPos(self, index: int) -> int:
         return self.__positions[index]
 
-    def getFreeTile(self)->dict:
+    def getFreeTile(self) -> dict:
         return self.__freeTile
 
-    def getBoard(self)->list:
+    def getBoard(self) -> list:
         return self.__board
 
-    def undo(self)->None:
+    def undo(self) -> None:
         self.__board = self.__oldBoard
         self.__freeTile = self.__oldFree
         self.__positions = self.__oldPos
+
 
 class Gates:
     """This class gathers all the functions related to the gates' indexes/letters: 
@@ -206,48 +208,48 @@ class Gates:
             35: "J", 21: "K", 7: "L"
         }
 
-    def index(self, letter: str)->int:
+    def index(self, letter: str) -> int:
         return self.__gate_to_index[letter]
 
-    def allIndexes(self)->list[int]:
+    def allIndexes(self) -> list[int]:
         return [1, 3, 5, 13, 27, 41, 47, 45, 43, 35, 21, 7]
 
-    def rowIndexes(self)->list[int]:
+    def rowIndexes(self) -> list[int]:
         """
         Output indexes correspond to `["D", "E", "F", "J", "K", "L"]`
         """
         return [13, 27, 41, 35, 21, 7]
 
-    def columnIndexes(self)->list[int]:
+    def columnIndexes(self) -> list[int]:
         """
         Output indexes correspond to `["A", "B", "C", "G", "H", "I"]`
         """
         return [1, 3, 5, 47, 45, 43]
 
-    def letter(self, index: int)->str:
+    def letter(self, index: int) -> str:
         return self.__index_to_gate[index]
 
-    def eastGates(self)->list[str]:
+    def eastGates(self) -> list[str]:
         return ["D", "E", "F"]
 
-    def westGates(self)->list[str]:
+    def westGates(self) -> list[str]:
         return ["L", "K", "J"]
 
-    def northGates(self)->list[str]:
+    def northGates(self) -> list[str]:
         return ["A", "B", "C"]
 
-    def southGates(self)->list[str]:
+    def southGates(self) -> list[str]:
         return ["I", "H", "G"]
 
-    def allLetters(self)->list[str]:
+    def allLetters(self) -> list[str]:
         return ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]
 
-    def rowLetters(self)->list[str]:
+    def rowLetters(self) -> list[str]:
         return ["D", "E", "F", "J", "K", "L"]
 
-    def columnLetters(self)->list[str]:
+    def columnLetters(self) -> list[str]:
         return ["A", "B", "C", "G", "H", "I"]
-    
+
     def exceptGate(self, pos, move):
         """This function takes the gate that is on the same row/column of the position and next position(move) passed in parameter
 
@@ -270,9 +272,9 @@ class Gates:
             else:
                 list.append(self.letter(gate))
         return list
-    
 
-def nextIndex(initialPos: int, direction: str)->int:
+
+def nextIndex(initialPos: int, direction: str) -> int:
     """Returns the index of the next tile a chosen direction
 
     Parameters
@@ -421,7 +423,8 @@ def playerLegalMoves(initialPos: int, board: list) -> list[int]:
             pass
     return board_legalMoves
 
-def cartesian(target:int)->tuple:
+
+def cartesian(target: int) -> tuple:
     """This function returns the cartesian coordinates of a tile on the board
 
     Parameters
@@ -434,16 +437,19 @@ def cartesian(target:int)->tuple:
     tuple
         the x and y coordinates 
     """
-    x = target%7 
-    rows = [range(0, 7), range(7, 14), range(14, 21), range(21, 28), range(28, 35), range(35, 42), range(42, 49)]
+    x = target % 7
+    y = 0
+    rows = [range(0, 7), range(7, 14), range(14, 21), range(
+        21, 28), range(28, 35), range(35, 42), range(42, 49)]
     i = 7
     for row in rows:
-        i-=1
+        i -= 1
         if target in row:
-            y = i 
-    return(x, y)
+            y = i
+    return (x, y)
 
-def distance(pos:int, item:int)->float:
+
+def distance(pos: int, item: int) -> int:
     """This function calculates the distance between the player's position and the item he has to find
 
     Parameters
@@ -463,4 +469,3 @@ def distance(pos:int, item:int)->float:
     d1 = abs(cartPos[0]-cartItem[0])
     d2 = abs(cartPos[1]-cartItem[1])
     return d1+d2
-
