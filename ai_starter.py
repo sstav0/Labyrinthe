@@ -1,7 +1,4 @@
-from communication import runner_inscription
-from communication import randomMatricule
-from communication import server
-from communication import get_free_ports
+from communication import runner_inscription, randomMatricule, server, get_free_ports
 import argparse
 import socket
 

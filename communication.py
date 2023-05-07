@@ -4,13 +4,9 @@ import random
 from ai import makeMove
 
 
-def runner_inscription(adresseIP, portClient, player, matricules, port: int = 3000) -> None:
-    """function that makes the inscription to the game server 
-
-    Parameters
-    ----------
-    port : int, optional
-        _description_, by default 3000
+def runner_inscription(adresseIP: str, portClient: int, player: int, matricules: list[int], port: int = 3000) -> None:
+    """
+    Makes the inscription to the game server.
     """
     inscription_info: dict = {
         "request": "subscribe",
@@ -31,22 +27,22 @@ def runner_inscription(adresseIP, portClient, player, matricules, port: int = 30
 
 
 def pong() -> str:
-    """function that makes the json dictionary response to the "ping" request
+    """
+    Makes the json dictionary response to the "ping" request.
 
     Returns
     -------
-    json
-       response
+    str
+       Pong response
     """
-    dictPong: dict = {
-        "response": "pong"
-    }
+    dictPong: dict = {"response": "pong"}
     pong = json.dumps(dictPong)
     return pong
 
 
 def moveResponse(state: dict) -> str:
-    """This function generates the response dictionary for a move
+    """
+    This function generates the response dictionary for a move.
 
     Parameters
     ----------
@@ -62,9 +58,6 @@ def moveResponse(state: dict) -> str:
 
     move_dict = makeMove(state["tile"], state["positions"],
                          state["current"], state["target"], state["board"])
-
-    # print("---------------------------\nPLAYER {}: \nOLD POSITION: {}\nNEW POSITION: {}\n----------------------".format(
-    #     current, state["positions"][current], move_dict["new_position"]))
 
     if current == 0:
         response_dict = {
@@ -83,13 +76,11 @@ def moveResponse(state: dict) -> str:
     return json.dumps(response_dict)
 
 
-def server(port, player, serv_timeout=1, client_timeout=0.2) -> None:
+def server(port: int, player: int, serv_timeout: int = 1, client_timeout: float = 0.2) -> None:
     """This function manages the communication between the AI and the server
 
     Parameters
     ----------
-    adresseIP : str
-        IP address of the computer which runs the AI
     port : int
         port used by the AI
     player : int
@@ -136,13 +127,16 @@ def server(port, player, serv_timeout=1, client_timeout=0.2) -> None:
                 pass
 
 
-def saveMessage(player_number, message1, message2=None) -> None:
-    """This functions saves any message (dictionary) in a .txt file 
+def saveMessage(player_number: int, message1: dict, message2=None) -> None:
+    """
+    Saves any message (dictionary) in a .txt file.
 
     Parameters
     ----------
-        player_number (int): number of the player (0 or 1)
-        message (dict): message that's going to be saved in the .txt file
+    player_number : int
+        number of the player (0 or 1)
+    message : dict
+        message that's going to be saved in the .txt file
     """
     if message2 != None:
         with open('errors.txt', 'a') as file:
@@ -155,12 +149,13 @@ def saveMessage(player_number, message1, message2=None) -> None:
 
 
 def sendMessage(socket, message: bytes) -> None:
-    """This functions sends a message on a socket 
+    """
+    Sends a message on a socket.
 
     Parameters
     ----------
     socket : 
-        The socket on which the message is sent     
+        The socket on which the message is sent
     message : str
         The json dictionary containing the message 
     """
@@ -171,16 +166,17 @@ def sendMessage(socket, message: bytes) -> None:
 
 
 def receiveMessage(socket) -> str:
-    """This function receives a message sent on a socket
+    """
+    Receives a message sent on a socket.
 
     Parameters
     ----------
-    socket : socket
+    socket :
         the socket on which the message has been send 
 
     Returns
     -------
-    json
+    str
         json dict response 
     """
     msg = ""
@@ -194,7 +190,8 @@ def receiveMessage(socket) -> str:
 
 
 def get_free_ports(num_ports: int) -> list:
-    """Returns a list of `num_ports` available ports on localhost.
+    """
+    Returns a list of `num_ports` available ports on localhost.
 
     Parameters
     ----------
@@ -218,7 +215,8 @@ def get_free_ports(num_ports: int) -> list:
 
 
 def randomMatricule(quantity: int, parameter: int = 2000) -> list[int]:
-    """This function returns a list of a certain amount of random matricules among 4000 matricules(by default)
+    """
+    Returns a list of a certain amount of random matricules among 2000 matricules (by default).
 
     Parameters
     ----------
@@ -239,7 +237,8 @@ def randomMatricule(quantity: int, parameter: int = 2000) -> list[int]:
 
 
 def matriculeGenerator(number: int) -> list[int]:
-    """This function generates a certain number of different matricules with 5 digits
+    """
+    Generates a certain number of different matricules with 5 digits.
 
     Parameters
     ----------

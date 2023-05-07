@@ -1,11 +1,17 @@
 import time
-from rules import Board, Gates
-import rules
-from rules import playerLegalMoves, nextIndex, oppositeDirection, distance, orientations
+from rules import Board, Gates, distance, playerLegalMoves, nextIndex, oppositeDirection, distance, orientations
 from typing import Union
 
 
 def timeit(func):
+    """
+    Prints execution time of a function.
+
+    Parameters
+    ----------
+    func : function
+        The function to be measured.
+    """
     def wrapper(*args, **kwargs):
         start_time = time.time()
         result = func(*args, **kwargs)
@@ -17,7 +23,8 @@ def timeit(func):
 
 
 def h(initPos: int, target: int) -> int:
-    """This function returns the distance between the position of the player and the position of the target
+    """
+    This function returns the distance between the position of the player and the position of the target.
 
     Parameters
     ----------
@@ -31,11 +38,12 @@ def h(initPos: int, target: int) -> int:
     int
         Manhattan distance between the current position and the target
     """
-    return rules.distance(initPos, target)
+    return distance(initPos, target)
 
 
 def boardMap(board: list[dict]) -> dict:
-    """This function creates a list that contains a score value of 'inf' for each tile on the board
+    """
+    This function creates a list that contains a score value of 'inf' for each tile on the board.
 
     Parameters
     ----------
@@ -54,7 +62,8 @@ def boardMap(board: list[dict]) -> dict:
 
 
 def bestNode(openSet: list, target: int) -> int:
-    """This function returns the index that is the closest to the target index in the openSet list
+    """
+    This function returns the index closest to the target index in the openSet list.
 
     Parameters
     ----------
@@ -79,7 +88,8 @@ def bestNode(openSet: list, target: int) -> int:
 
 
 def reconstructPath(cameFrom: dict, current: int) -> list[int]:
-    """This function returns the indexes of the path taken in the right order
+    """
+    This function returns the indexes of the path taken in the right order.
 
     Parameters
     ----------
@@ -101,7 +111,8 @@ def reconstructPath(cameFrom: dict, current: int) -> list[int]:
 
 
 def playerLegalMoves(initialPos: int, board: list) -> list[int]:
-    """This function returns a list of the possible moves (positions)
+    """
+    This function returns a list of the possible moves (positions)
 
     Parameters
     ----------
@@ -133,7 +144,8 @@ def playerLegalMoves(initialPos: int, board: list) -> list[int]:
 
 
 def A_star(initPos: int, targetPos: int, board: list) -> Union[list[int], str]:
-    """This function finds the best way on the board passed in parameter to reach the target position passed in parameter
+    """
+    This function finds the best way on the board passed in parameter to reach the target position passed in parameter.
 
     Parameters
     ----------
@@ -151,44 +163,40 @@ def A_star(initPos: int, targetPos: int, board: list) -> Union[list[int], str]:
     """
 
     openSet = [initPos]  # indexes to explore/re-explore
-
     cameFrom = {}  # for each new position, the value is the previous position. Example {1:0} means you went from 0 to 1
-
-    # initalize the score map: for each tile, boardMap sets the value to 'inf'
+    # initialize the score map: for each tile, boardMap sets the value to 'inf'
     gScore = boardMap(board)
-    gScore[initPos] = 0  # the socre of the inital position
+    gScore[initPos] = 0  # the score of the initial position
 
-    # intialize the score map: for each tile, boardMap sets the value to 'inf'
+    # initialize the score map: for each tile, boardMap sets the value to 'inf'
     fScore = boardMap(board)
     # the score of the initial position is the distance between the position and the target
     fScore[initPos] = h(initPos, targetPos)
 
     current = 0
     while openSet != []:
-
         current = bestNode(openSet, targetPos)
         if current == targetPos:
             return reconstructPath(cameFrom, current)
         if playerLegalMoves(current, board) != []:
             openSet.remove(current)
             for neighbor in (playerLegalMoves(current, board)):
-                tentativeScore = gScore[current]+distance(current, neighbor)
+                tentativeScore = gScore[current] + distance(current, neighbor)
                 if tentativeScore < gScore[neighbor]:
                     cameFrom[neighbor] = current
                     gScore[neighbor] = tentativeScore
                     fScore[neighbor] = tentativeScore + h(neighbor, targetPos)
                     if neighbor not in openSet:
                         openSet.append(neighbor)
-
         else:
             return "CAN'T MOVE"
-
     return reconstructPath(cameFrom, current)
 
 
 @timeit
 def makeMove(tile: dict, positions: list, current: int, target: int, board: list) -> dict:
-    """This function handles the calls of the function algorithm and assigns a score to each move possiblre
+    """
+    This function handles the calls of the function algorithm and assigns a score to each possible move.
 
     Parameters
     ----------
@@ -215,16 +223,18 @@ def makeMove(tile: dict, positions: list, current: int, target: int, board: list
     bestTile = {}
     BoardObject = Board(board, tile, positions)
 
+    # Looping tile's orientations
     for orientation in orientations(BoardObject.getFreeTile()):
         BoardObject.changeTile(orientation)
+        # Looping possible insert gates
         for gate in Gates().allLetters():
             BoardObject.update(gate)
             itemPos = BoardObject.findItem(target)
-            if itemPos != None:
+            if itemPos != None:  # If item is found
                 move = A_star(BoardObject.getPos(current),
                               itemPos, BoardObject.getBoard())
-                if type(move[-1]) == int:
-                    score = distance(move[-1], itemPos)*10+len(playerLegalMoves(
+                if type(move[-1]) == int:  # If the player can move
+                    score = distance(move[-1], itemPos) * 10 + len(playerLegalMoves(
                         BoardObject.getPos(current % -2+1), BoardObject.getBoard()))
                 else:
                     score = 100
@@ -232,7 +242,7 @@ def makeMove(tile: dict, positions: list, current: int, target: int, board: list
             else:
                 score = 100
                 move = [BoardObject.getPos(current)]
-            if score < bestScore:
+            if score < bestScore:  # If a lower cost move is found, set to current best move
                 bestMove = move
                 bestScore = score
                 bestGate = gate
@@ -241,9 +251,9 @@ def makeMove(tile: dict, positions: list, current: int, target: int, board: list
             BoardObject.undo()
 
     if current == 0:
-        print(f"\nYELLOW  =>  BESTMOVE: {bestMove}\n")
+        print(f"\nYELLOW  =>  BEST MOVE: {bestMove}\n")
     else:
-        print(f"\nBLUE  =>  BESTMOVE: {bestMove}\n")
+        print(f"\nBLUE  =>  BEST MOVE: {bestMove}\n")
 
     time.sleep(1.5)
     move_dict = {
@@ -252,4 +262,3 @@ def makeMove(tile: dict, positions: list, current: int, target: int, board: list
         "new_position": bestMove[-1]
     }
     return move_dict
-

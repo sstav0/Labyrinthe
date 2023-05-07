@@ -3,27 +3,28 @@ from typing import Union
 
 
 class Board:
-    """This class gathers all functions related to the management of the board: 
+    """
+    This class gathers all functions related to the management of the board: 
 
-        "update"
-        ---
-        Allows to update the board after inserting the tile in one of the available gates
+    `update`
+    ---
+    Allows to update the board after inserting the tile in one of the available gates.
 
-        "getPos"
-        ---
-        Allows to retrieve the positions of the players on the board
+    `getPos`
+    ---
+    Allows to retrieve the positions of the players on the board.
 
-        "getFreeTile"
-        ---
-        Allows to retrieve the dictionary of the additional tile
+    `getFreeTile`
+    ---
+    Allows to retrieve the dictionary of the additional tile.
 
-        "getBoard"
-        ---
-        Allows to retrieve the dictionary of the board
+    `getBoard`
+    ---
+    Allows to retrieve the dictionary of the board.
 
-        "undo"
-        ---
-        Cancels the previous update on the board
+    `undo`
+    ---
+    Cancels the previous update on the board.
     """
     outlineNorth = [0, 1, 2, 3, 4, 5, 6]
     outlineEast = [6, 13, 20, 27, 34, 41, 48]
@@ -41,11 +42,12 @@ class Board:
         self.__oldFree = {}
 
     def update(self, gate: str) -> None:
-        """This function updates the board after sliding the tile in a gate
+        """
+        This function updates the board after sliding the tile in a gate
 
         Parameters
         ----------
-        gate : str      
+        gate : str
             letter of the gate
         """
         self.__oldBoard = copy.deepcopy(self.__board)
@@ -103,7 +105,8 @@ class Board:
                             self.__positions[i] = self.__positions[i] - 7
 
     def findItem(self, item: int) -> Union[int, None]:
-        """This function returns the position of [item]
+        """
+        This function returns the position on the board of [item].
 
         Parameters
         ----------
@@ -113,7 +116,7 @@ class Board:
         Returns
         -------
         int
-            position of the item 
+            position of the item on the board
         """
         found = False
         for i, tile in enumerate(self.__board):
@@ -143,55 +146,56 @@ class Board:
 
 
 class Gates:
-    """This class gathers all the functions related to the gates' indexes/letters: 
+    """
+    This class gathers all the functions related to the gates' indexes/letters: 
 
-        "index"
-        ---
-        Returns the index of a gate's letter
+    `index`
+    ---
+    Returns the index of a gate's letter
 
-        "letter"
-        ---
-        Returns the letter of a gate's index
+    `letter`
+    ---
+    Returns the letter of a gate's index
 
-        "allIndexes"
-        ---
-        Returns the indexes of every gate
+    `allIndexes`
+    ---
+    Returns the indexes of every gate
 
-        "allLetters"
-        ---
-        Returns the letters of every gate
+    `allLetters`
+    ---
+    Returns the letters of every gate
 
-        "rowIndexes"
-        ---
-        Returns the indexes of the gates located on the right or left side of the board
+    `rowIndexes`
+    ---
+    Returns the indexes of the gates located on the right or left side of the board
 
-        "columnIndexes"
-        ---
-        Return the indexes of the gates located on the top and bottom side of the board
+    `columnIndexes`
+    ---
+    Return the indexes of the gates located on the top and bottom side of the board
 
-        "rowLetters"
-        ---
-        Returns the letters of the gates located on the right or left side of the board
+    `rowLetters`
+    ---
+    Returns the letters of the gates located on the right or left side of the board
 
-        "columnLetters"
-        ---
-        Returns the letters of the gates located on the right or left side of the board
+    `columnLetters`
+    ---
+    Returns the letters of the gates located on the right or left side of the board
 
-        "eastGates"
-        ---
-        Return the gates located on the right of the board
+    `eastGates`
+    ---
+    Return the gates located on the right of the board
 
-        "westGates"
-        ---
-        Return the gates located on the left of the board
+    `westGates`
+    ---
+    Return the gates located on the left of the board
 
-        "northGates"
-        ---
-        Return the gates located on the top of the board
+    `northGates`
+    ---
+    Return the gates located on the top of the board
 
-        "southGates"
-        --- 
-        Return the gates located on the right of the board
+    `southGates`
+    --- 
+    Return the gates located on the right of the board
     """
 
     def __init__(self) -> None:
@@ -250,14 +254,15 @@ class Gates:
     def columnLetters(self) -> list[str]:
         return ["A", "B", "C", "G", "H", "I"]
 
-    def exceptGate(self, pos, move):
-        """This function takes the gate that is on the same row/column of the position and next position(move) passed in parameter
+    def exceptGate(self, pos: int, move):
+        """
+        This function takes the gate that is on the same row/column of the position and next position(move) passed in parameter.
 
         Parameters
         ----------
         pos : int
             position 
-        move : _type_
+        move :
             next position
 
         Returns
@@ -275,14 +280,15 @@ class Gates:
 
 
 def nextIndex(initialPos: int, direction: str) -> int:
-    """Returns the index of the next tile a chosen direction
+    """
+    Returns the index of the next tile in a chosen direction.
 
     Parameters
     ----------
     initialPos : int
         index of the initial tile
     direction : str
-        abbreviation of the direction   
+        abbreviation of the direction `N`, `E`, `S`, or `W`
 
     Returns
     -------
@@ -304,12 +310,13 @@ def nextIndex(initialPos: int, direction: str) -> int:
 
 
 def oppositeDirection(direction: str) -> str:
-    """ This function returns the opposite direction of direction given
+    """
+    This function returns the opposite direction of given direction.
 
     Parameters
     ----------
     direction : str
-        "N"; "S"; "W"; "O" 
+        Must be : `N`, `S`, `W`, or `E` 
 
     Returns
     -------
@@ -333,12 +340,10 @@ def orientations(tile: dict) -> list[dict]:
     Parameters
     ----------
     tile : dict
-        The tile for which we want all orientations.
-        The tile should be as follows :
+        The tile for which we want all orientations. The tile should be as follows :
         ```
         {"N": true, "E": false, "S": true, "W": true, "item": 1}
         ```
-
     Returns
     -------
     list[dict]
@@ -361,7 +366,8 @@ def orientations(tile: dict) -> list[dict]:
 
 
 def columnList(pos: int) -> list:
-    """This function returns a list of the tile's indexes of a column or a row with pos, the first tile's index of the row/column
+    """
+    This function returns a list of the tile's indexes of a column or a row with pos, the first tile's index of the row/column.
 
     Parameters
     ----------
@@ -393,7 +399,8 @@ def columnList(pos: int) -> list:
 
 
 def playerLegalMoves(initialPos: int, board: list) -> list[int]:
-    """This function returns a list of the possible moves (positions)
+    """
+    This function returns a list of the possible moves (positions).
 
     Parameters
     ----------
@@ -404,7 +411,7 @@ def playerLegalMoves(initialPos: int, board: list) -> list[int]:
 
     Returns
     -------
-    list 
+    list[int]
         list of the legal moves. It contains at least the initial position
     """
     board_legalMoves = [initialPos]
@@ -425,7 +432,8 @@ def playerLegalMoves(initialPos: int, board: list) -> list[int]:
 
 
 def cartesian(target: int) -> tuple:
-    """This function returns the cartesian coordinates of a tile on the board
+    """
+    This function returns the cartesian coordinates of a tile on the board.
 
     Parameters
     ----------
@@ -450,7 +458,8 @@ def cartesian(target: int) -> tuple:
 
 
 def distance(pos: int, item: int) -> int:
-    """This function calculates the distance between the player's position and the item he has to find
+    """
+    This function calculates the distance between the player's position and the item he has to find.
 
     Parameters
     ----------
