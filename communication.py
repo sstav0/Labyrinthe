@@ -90,41 +90,36 @@ def server(port: int, player: int, serv_timeout: int = 2, client_timeout: float 
     client_timeout : float, optional
         client socket timeout, by default 0.2
     """
-    with socket.socket() as s:
-        s.bind(("", port))
-        s.listen()
-        s.settimeout(serv_timeout)
-        while True:
+    s = socket.socket()
+    s.bind(("", port))
+    s.listen()
+
+    while True:
+        client, address = s.accept()
+        client.settimeout(client_timeout)
+        msg = ""
+        received = False
+        while not received:
             try:
-                client, address = s.accept()
-                client.settimeout(client_timeout)
-                with client:
-                    msg = ""
-                    received = False
-                    while not received:
-                        try:
-                            msg += client.recv(4096).decode()
-                        except socket.timeout:
-                            received = True
-                    if msg != "":
-                        data = json.loads(msg)
-                        if data["request"] == 'play':
-                            print("\nREQUEST: {}".format(data["request"]))
-                            response = moveResponse(data["state"]).encode()
-
-                            if data["errors"] != []:  # if there is an error
-                                saveMessage(player, data["errors"], "position:{}".format(
-                                    data["state"]["positions"][data["state"]["current"]]))  # saving the error in a .txt file
-
-                            sendMessage(client, response)
-                            data["request"] = ""
-                        elif data["request"] == 'ping':
-                            print("\nREQUEST: {}".format(data["request"]))
-                            client.sendall(pong().encode())
-                            print("\npong")
-                            data["request"] = ""
+                msg += client.recv(4096).decode()
             except socket.timeout:
-                pass
+                received = True
+        if msg != "":
+            data = json.loads(msg)
+            if data["request"] == 'play':
+                print("\nREQUEST: {}".format(data["request"]))
+                response = moveResponse(data["state"]).encode()
+                if data["errors"] != []:
+                    saveMessage(player, data["errors"], "position:{}".format(
+                        data["state"]["positions"][data["state"]["current"]]))
+                client.sendall(response)
+                data["request"] = ""
+            elif data["request"] == 'ping':
+                print("\nREQUEST: {}".format(data["request"]))
+                client.sendall(pong().encode())
+                print("\npong")
+                data["request"] = ""
+        client.close()
 
 
 def saveMessage(player_number: int, message1: dict, message2=None) -> None:
