@@ -76,7 +76,7 @@ def moveResponse(state: dict) -> str:
     return json.dumps(response_dict)
 
 
-def server(port: int, player: int, serv_timeout: int = 1, client_timeout: float = 0.2) -> None:
+def server(port: int, player: int, serv_timeout: int = 2, client_timeout: float = 0.3) -> None:
     """This function manages the communication between the AI and the server
 
     Parameters

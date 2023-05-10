@@ -1,6 +1,7 @@
-import Program.ai as ai 
-import Program.rules as rules
 import pytest 
+import ai 
+import rules
+
 import copy
 
 @pytest.fixture

@@ -1,5 +1,6 @@
-from Program import rules
 import pytest
+import rules
+
 
 
 @pytest.fixture

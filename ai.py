@@ -1,5 +1,5 @@
 import time
-from Program.rules import Board, Gates, distance, playerLegalMoves, nextIndex, oppositeDirection, distance, orientations
+from rules import Board, Gates, distance, playerLegalMoves, distance, orientations
 from typing import Union
 
 
