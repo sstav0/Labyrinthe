@@ -124,7 +124,7 @@ class Board:
                 found = True
                 return i
         if not found:
-            print("ITEM {} NOT FOUND".format(chr(ord("A")+item)))
+            # print("ITEM {} NOT FOUND".format(chr(ord("A")+item)))
             return None
 
     def changeTile(self, free: dict) -> None:
@@ -253,30 +253,6 @@ class Gates:
 
     def columnLetters(self) -> list[str]:
         return ["A", "B", "C", "G", "H", "I"]
-
-    def exceptGate(self, pos: int, move):
-        """
-        This function takes the gate that is on the same row/column of the position and next position(move) passed in parameter.
-
-        Parameters
-        ----------
-        pos : int
-            position 
-        move :
-            next position
-
-        Returns
-        -------
-        list
-            list of the gate letters that are not on the same column/row of the position and next position
-        """
-        list = []
-        for gate in Gates().allIndexes():
-            if pos in columnList(gate) or move in columnList(gate):
-                pass
-            else:
-                list.append(self.letter(gate))
-        return list
 
 
 def nextIndex(initialPos: int, direction: str) -> int:
