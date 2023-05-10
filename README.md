@@ -2,7 +2,7 @@
 
 'AImazing' is a research algorithm AI developed by `21151` and `21211`.
 
-It has been design to compete in the board game 'Labyrinthe' developed by Ravensburger, a treasure hunt in a sliding maze.
+It has been design to compete in the board game [Labyrinthe](https://www.ravensburger.org/frbe/produits/jeux/jeux-de-soci%C3%A9t%C3%A9-pour-la-famille/labyrinthe-26743/index.html) developed by Ravensburger, a treasure hunt in a sliding maze.
 
 ## Project Requirements
 
