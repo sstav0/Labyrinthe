@@ -1,5 +1,5 @@
 import time
-from rules import Board, Gates, distance, playerLegalMoves, nextIndex, oppositeDirection, distance, orientations
+from Program.rules import Board, Gates, distance, playerLegalMoves, nextIndex, oppositeDirection, distance, orientations
 from typing import Union
 
 
@@ -110,38 +110,6 @@ def reconstructPath(cameFrom: dict, current: int) -> list[int]:
     return totalPath
 
 
-def playerLegalMoves(initialPos: int, board: list) -> list[int]:
-    """
-    This function returns a list of the possible moves (positions)
-
-    Parameters
-    ----------
-    initialPos : int
-        initial position
-    board : list
-        list of the dictionaries referring to the walls and free ways of each tile on the board
-
-    Returns
-    -------
-    list 
-        list of the legal moves. It contains at least the initial position
-    """
-    board_legalMoves = []
-
-    # iters through the dictionary of the initial tile
-    for direction, value in board[initialPos].items():
-        if direction != "item":  # checks if it's not iterating through the item of the tile
-            if value == True:  # if the value is true means that there is no wall in that orientation
-                # nextTile is your next position if you'd move in the direction
-                nextTile = nextIndex(initialPos, direction)
-                # checks if there is a wall in the direction on the next Tile (/!\ the next tile's direction is the opposite of the previous tile's direction)
-                if board[nextTile][oppositeDirection(direction)] == True and nextTile != initialPos:
-                    # if there is no wall, it adds the next tile's index in the legal moves list
-                    board_legalMoves.append(nextTile)
-        else:
-            pass
-    return board_legalMoves
-
 
 def A_star(initPos: int, targetPos: int, board: list) -> Union[list[int], str]:
     """
@@ -178,7 +146,7 @@ def A_star(initPos: int, targetPos: int, board: list) -> Union[list[int], str]:
         current = bestNode(openSet, targetPos)
         if current == targetPos:
             return reconstructPath(cameFrom, current)
-        if playerLegalMoves(current, board) != []:
+        if playerLegalMoves(current, board) != [initPos]:
             openSet.remove(current)
             for neighbor in (playerLegalMoves(current, board)):
                 tentativeScore = gScore[current] + distance(current, neighbor)
