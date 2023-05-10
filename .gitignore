@@ -1,6 +1,7 @@
 __pycache__
 .vscode
 .pytest_cache 
+.coverage
 test.py 
 errors.txt
 state example.txt
