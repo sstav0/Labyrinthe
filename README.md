@@ -34,6 +34,11 @@ The algorithm also takes into account the number of legal moves available for bo
 
 It then selects the node with the lowest score to continue the search. This process continues until the target is reached or all possible paths have been explored.
 
+### Start Server
+
+To run the algorithm, you'll have to run the server first. Here's the server's [repository](https://github.com/qlurkin/PI2CChampionshipRunner.git) where everything is explained. 
+Here are the [instructions](https://github.com/qlurkin/PI2CChampionshipRunner/tree/main/games/labyrinthe) to start the ***Labyrinthe*** game.
+
 ### Start algorithm
 
 To start the algorithm, make sure the path is in the `.\Labyrinthe` directory and run the batch file as follows :
